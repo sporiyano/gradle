@@ -17,5 +17,7 @@
 package common
 
 enum class Os(val agentRequirement: String, val ignoredSubprojects: List<String> = emptyList()) {
-    linux("Linux"), windows("Windows"), macos("Mac", listOf("integ-test", "native", "plugins", "resources", "scala", "workers", "wrapper", "platform-play", "tooling-native"))
+    linux("Linux"), windows("Windows"), macos("Mac", listOf("integ-test", "native", "plugins", "resources", "scala", "workers", "wrapper", "platform-play", "tooling-native"));
+
+    fun escapeKeyValuePair(key: String, value: String) = if (this == windows) """$key="$value"""" else """"$key=$value""""
 }
