@@ -24,6 +24,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.os.OperatingSystem
 import org.gradle.kotlin.dsl.*
 
 
@@ -50,7 +51,7 @@ abstract class DetermineBaselines @Inject constructor(@get:Internal val distribu
             determinedBaselines.set(defaultBaseline)
         } else if (configuredBaselines.getOrElse("") == flakinessDetectionCommitBaseline) {
             determinedBaselines.set(determineFlakinessDetectionBaseline())
-        } else if (!currentBranchIsMasterOrRelease() && configuredBaselines.isDefaultValue()) {
+        } else if (!currentBranchIsMasterOrRelease() && !OperatingSystem.current().isWindows && configuredBaselines.isDefaultValue()) {
             determinedBaselines.set(forkPointCommitBaseline())
         } else {
             determinedBaselines.set(configuredBaselines)
