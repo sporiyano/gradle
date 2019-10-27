@@ -57,7 +57,7 @@ abstract class BuildCommitDistribution : DefaultTask() {
     fun buildCommitDistribution() {
         val rootProjectDir = project.rootProject.rootDir.absolutePath
         val commit = commitBaseline.map { it.substring(it.lastIndexOf('-') + 1) }
-        tryBuildDistribution(RemoteProject.checkout(this, rootProjectDir, commit.get()))
+        tryBuildDistribution(RemoteProject.checkout(this, rootProjectDir, commit.get(), project.rootProject.buildDir.resolve("bcd")))
         println("Building the commit distribution succeeded, now the baseline is ${commitBaseline.get()}")
     }
 
