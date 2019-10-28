@@ -21,12 +21,17 @@ import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.script
 import model.CIBuildModel
 import model.StageNames
 
-val killAllGradleProcesses = """
+val killAllGradleProcessesLinux = """
     free -m
     ps aux | egrep 'Gradle(Daemon|Worker)'
     ps aux | egrep 'Gradle(Daemon|Worker)' | awk '{print ${'$'}2}' | xargs kill -9
     free -m
     ps aux | egrep 'Gradle(Daemon|Worker)' | awk '{print ${'$'}2}'
+""".trimIndent()
+
+// TODO: Do some actual killing here
+val killAllGradleProcessesWindows = """
+    WMIC PROCESS GET processid,commandline
 """.trimIndent()
 
 val m2CleanScriptUnixLike = """
