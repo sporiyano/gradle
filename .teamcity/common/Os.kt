@@ -16,8 +16,10 @@
 
 package common
 
-enum class Os(val agentRequirement: String, val ignoredSubprojects: List<String> = emptyList()) {
-    linux("Linux"), windows("Windows"), macos("Mac", listOf("integ-test", "native", "plugins", "resources", "scala", "workers", "wrapper", "platform-play", "tooling-native"));
+enum class Os(val agentRequirement: String, val ignoredSubprojects: List<String> = emptyList(), val androidHome: String = "/opt/android/sdk") {
+    linux("Linux"),
+    windows("Windows", androidHome = """C:\Program Files\android\sdk"""),
+    macos("Mac", listOf("integ-test", "native", "plugins", "resources", "scala", "workers", "wrapper", "platform-play", "tooling-native"));
 
     fun escapeKeyValuePair(key: String, value: String) = if (this == windows) """$key="$value"""" else """"$key=$value""""
 }
