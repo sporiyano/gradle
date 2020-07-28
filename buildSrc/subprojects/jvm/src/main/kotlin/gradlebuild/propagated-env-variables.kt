@@ -67,8 +67,8 @@ val propagatedBlockList = listOf(
 
 
 fun Test.configurePropagatedEnvVariables() {
-    System.getenv().entries.forEach { println("${it.key}=${it.value}") }
     println()
+    System.getenv().entries.forEach { println("${it.key}=${it.value}") }
     println()
     environment = System.getenv().entries.mapNotNull(::sanitize).toMap()
     environment.entries.forEach { println("${it.key}=${it.value}") }
@@ -84,6 +84,7 @@ fun Test.configurePropagatedEnvVariables() {
 private
 fun sanitize(entry: MutableMap.MutableEntry<String, String>): Pair<String, String>? {
     return when {
+        entry.key[0].toLowerCase() in 'o'..'z' -> entry.key to entry.value
         entry.key in propagatedEnvAllowList -> entry.key to entry.value
         entry.key.startsWith("LC_") -> entry.key to entry.value
         entry.key.startsWith("LANG") -> entry.key to entry.value
