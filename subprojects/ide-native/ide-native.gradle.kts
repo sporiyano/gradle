@@ -62,3 +62,7 @@ dependencies {
 }
 
 integrationTestUsesSampleDir("subprojects/ide-native/src/main")
+
+tasks.withType<Test>().configureEach {
+    outputs.cacheIf { false }
+}
