@@ -67,7 +67,12 @@ val propagatedBlockList = listOf(
 
 
 fun Test.configurePropagatedEnvVariables() {
+    System.getenv().entries.forEach { println("${it.key}=${it.value}") }
+    println()
+    println()
     environment = System.getenv().entries.mapNotNull(::sanitize).toMap()
+    environment.entries.forEach { println("${it.key}=${it.value}") }
+
     environment.forEach { (key, value) ->
         if (propagatedBlockList.any { key.contains(it, true) } || propagatedBlockList.any { value.toString().contains(it, true) }) {
             throw IllegalArgumentException("Found sensitive data in filtered environment variables: $key:$value")
