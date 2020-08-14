@@ -85,7 +85,7 @@ public class DependencyClassPathNotationConverter implements NotationConverter<D
     private SelfResolvingDependency create(final DependencyFactory.ClassPathNotation notation) {
         boolean runningFromInstallation = currentGradleInstallation.getInstallation() != null;
         FileCollectionInternal fileCollectionInternal;
-        if (runningFromInstallation && notation.equals(GRADLE_API)) {
+        if (notation.equals(GRADLE_API)) {
             fileCollectionInternal = fileCollectionFactory.create(new GeneratedFileCollection(notation.displayName) {
                 @Override
                 Set<File> generateFileCollection() {
