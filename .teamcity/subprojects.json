@@ -399,11 +399,11 @@
     "crossVersionTests": false
   },
   {
-    "dirName": "jvm-services",
-    "name": "jvm-services",
-    "unitTests": true,
-    "functionalTests": false,
-    "crossVersionTests": false
+      "dirName": "jvm-services",
+      "name": "jvm-services",
+      "unitTests": true,
+      "functionalTests": true,
+      "crossVersionTests": false
   },
   {
     "dirName": "kotlin-compiler-embeddable",
