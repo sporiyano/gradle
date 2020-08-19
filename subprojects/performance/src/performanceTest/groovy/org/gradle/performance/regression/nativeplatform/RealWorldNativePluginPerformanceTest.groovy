@@ -17,14 +17,14 @@
 package org.gradle.performance.regression.nativeplatform
 
 import org.apache.commons.io.FileUtils
-import org.gradle.performance.AbstractCrossVersionGradleInternalPerformanceTest
+import org.gradle.performance.AbstractCrossVersionGradleProfilerPerformanceTest
 import org.gradle.performance.fixture.BuildExperimentInvocationInfo
 import org.gradle.performance.fixture.BuildExperimentListener
 import org.gradle.performance.fixture.BuildExperimentListenerAdapter
 import org.gradle.performance.measure.MeasuredOperation
 import spock.lang.Unroll
 
-class RealWorldNativePluginPerformanceTest extends AbstractCrossVersionGradleInternalPerformanceTest {
+class RealWorldNativePluginPerformanceTest extends AbstractCrossVersionGradleProfilerPerformanceTest {
 
     def setup() {
         runner.targetVersions = ["6.7-20200806220106+0000"]

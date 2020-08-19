@@ -17,7 +17,7 @@
 package org.gradle.performance.regression.buildcache
 
 import org.gradle.initialization.StartParameterBuildOptions
-import org.gradle.performance.AbstractCrossVersionGradleInternalPerformanceTest
+import org.gradle.performance.AbstractCrossVersionGradleProfilerPerformanceTest
 import org.gradle.performance.fixture.BuildExperimentInvocationInfo
 import org.gradle.performance.fixture.BuildExperimentListener
 import org.gradle.performance.fixture.BuildExperimentListenerAdapter
@@ -29,7 +29,7 @@ import org.junit.Rule
 import static org.gradle.performance.fixture.BuildExperimentRunner.Phase.MEASUREMENT
 import static org.gradle.performance.fixture.BuildExperimentRunner.Phase.WARMUP
 
-class AbstractTaskOutputCachingPerformanceTest extends AbstractCrossVersionGradleInternalPerformanceTest{
+class AbstractTaskOutputCachingPerformanceTest extends AbstractCrossVersionGradleProfilerPerformanceTest{
     int firstWarmupWithCache = 1
     TestFile cacheDir
     String protocol = "http"
@@ -92,7 +92,7 @@ class AbstractTaskOutputCachingPerformanceTest extends AbstractCrossVersionGradl
                     directory = '${cacheDir.absoluteFile.toURI()}'
                 }
                 remote(httpCacheClass) {
-                    url = '${buildCacheServer.uri}/' 
+                    url = '${buildCacheServer.uri}/'
                     push = ${pushToRemote}
                 }
             }

@@ -15,7 +15,8 @@
  */
 package org.gradle.performance.regression.inception
 
-import org.gradle.performance.AbstractCrossVersionGradleInternalPerformanceTest
+
+import org.gradle.performance.AbstractCrossVersionGradleProfilerPerformanceTest
 import org.gradle.performance.categories.SlowPerformanceRegressionTest
 import org.gradle.performance.fixture.BuildExperimentInvocationInfo
 import org.gradle.performance.fixture.BuildExperimentListenerAdapter
@@ -44,7 +45,7 @@ import static org.gradle.test.fixtures.server.http.MavenHttpPluginRepository.PLU
  */
 @Issue('https://github.com/gradle/gradle-private/issues/1313')
 @Category(SlowPerformanceRegressionTest)
-class GradleInceptionPerformanceTest extends AbstractCrossVersionGradleInternalPerformanceTest {
+class GradleInceptionPerformanceTest extends AbstractCrossVersionGradleProfilerPerformanceTest {
 
     static List<String> extraGradleBuildArguments() {
         ["-D${PLUGIN_PORTAL_OVERRIDE_URL_PROPERTY}=${gradlePluginRepositoryMirrorUrl()}",
