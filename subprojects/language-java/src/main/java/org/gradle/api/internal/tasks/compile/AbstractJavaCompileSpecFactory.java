@@ -18,18 +18,29 @@ package org.gradle.api.internal.tasks.compile;
 
 import org.gradle.api.tasks.compile.CompileOptions;
 import org.gradle.internal.Factory;
+import org.gradle.jvm.toolchain.internal.JavaToolchain;
+
+import javax.annotation.Nullable;
 
 public abstract class AbstractJavaCompileSpecFactory<T extends JavaCompileSpec> implements Factory<T> {
     private final CompileOptions compileOptions;
 
-    public AbstractJavaCompileSpecFactory(CompileOptions compileOptions) {
+    private final JavaToolchain toolchain;
+
+    public AbstractJavaCompileSpecFactory(CompileOptions compileOptions, @Nullable JavaToolchain toolchain) {
         this.compileOptions = compileOptions;
+        this.toolchain = toolchain;
+    }
+
+    public AbstractJavaCompileSpecFactory(CompileOptions compileOptions) {
+        this(compileOptions, null);
     }
 
     @Override
     public T create() {
         if (compileOptions.isFork()) {
-            if (compileOptions.getForkOptions().getExecutable() != null || compileOptions.getForkOptions().getJavaHome() != null) {
+            final boolean hasCustomExecutable = compileOptions.getForkOptions().getExecutable() != null || compileOptions.getForkOptions().getJavaHome() != null;
+            if (hasCustomExecutable && toolchain == null) {
                 return getCommandLineSpec();
             } else {
                 return getForkingSpec();

@@ -63,6 +63,7 @@ import org.gradle.internal.deprecation.DeprecationLogger;
 import org.gradle.internal.file.Deleter;
 import org.gradle.internal.jvm.DefaultModularitySpec;
 import org.gradle.internal.jvm.JavaModuleDetector;
+import org.gradle.internal.jvm.Jvm;
 import org.gradle.internal.operations.BuildOperationExecutor;
 import org.gradle.jvm.internal.toolchain.JavaToolChainInternal;
 import org.gradle.jvm.platform.JavaPlatform;
@@ -76,6 +77,7 @@ import org.gradle.language.base.internal.compile.CompilerUtil;
 import org.gradle.work.Incremental;
 import org.gradle.work.InputChanges;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
@@ -350,12 +352,7 @@ public class JavaCompile extends AbstractCompile implements HasCompileOptions {
         JavaModuleDetector javaModuleDetector = getJavaModuleDetector();
         boolean isModule = JavaModuleDetector.isModuleSource(modularity.getInferModulePath().get(), sourcesRoots);
 
-        if (javaCompiler.isPresent()) {
-            compileOptions.setFork(true);
-            final JavaToolchain toolchain = ((DefaultToolchainJavaCompiler) javaCompiler.get()).getJavaToolchain();
-            compileOptions.getForkOptions().setJavaHome(toolchain.getJavaHome());
-        }
-        final DefaultJavaCompileSpec spec = new DefaultJavaCompileSpecFactory(compileOptions).create();
+        final DefaultJavaCompileSpec spec = createBaseSpec();
         spec.setDestinationDir(getDestinationDirectory().getAsFile().get());
         spec.setWorkingDir(getProjectLayout().getProjectDirectory().getAsFile());
         spec.setTempDir(getTemporaryDir());
@@ -373,9 +370,34 @@ public class JavaCompile extends AbstractCompile implements HasCompileOptions {
         return spec;
     }
 
-    private void configureCompatibilityOptions(DefaultJavaCompileSpec spec) {
+    private DefaultJavaCompileSpec createBaseSpec() {
+        final ForkOptions forkOptions = compileOptions.getForkOptions();
         if (javaCompiler.isPresent()) {
-            final JavaToolchain toolchain = ((DefaultToolchainJavaCompiler) javaCompiler.get()).getJavaToolchain();
+            applyToolchain(forkOptions);
+        } else {
+            if (forkOptions.getJavaHome() == null) {
+                forkOptions.setJavaHome(Jvm.current().getJavaHome());
+            }
+        }
+        return new DefaultJavaCompileSpecFactory(compileOptions, getToolchain()).create();
+    }
+
+    private void applyToolchain(ForkOptions forkOptions) {
+        final JavaToolchain toolchain = getToolchain();
+        forkOptions.setJavaHome(toolchain.getJavaHome());
+        if (!toolchain.getJavaHome().equals(Jvm.current().getJavaHome())) {
+            compileOptions.setFork(true);
+        }
+    }
+
+    @Nullable
+    private JavaToolchain getToolchain() {
+        return javaCompiler.map(c -> ((DefaultToolchainJavaCompiler) javaCompiler.get()).getJavaToolchain()).getOrNull();
+    }
+
+    private void configureCompatibilityOptions(DefaultJavaCompileSpec spec) {
+        final JavaToolchain toolchain = getToolchain();
+        if (toolchain != null) {
             spec.setTargetCompatibility(toolchain.getJavaMajorVersion().getMajorVersion());
             spec.setSourceCompatibility(toolchain.getJavaMajorVersion().getMajorVersion());
         } else if (compileOptions.getRelease().isPresent()) {

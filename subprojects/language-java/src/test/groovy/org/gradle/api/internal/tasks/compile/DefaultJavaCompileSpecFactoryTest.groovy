@@ -25,7 +25,7 @@ class DefaultJavaCompileSpecFactoryTest extends Specification {
         CompileOptions options = new CompileOptions(Mock(ObjectFactory))
         options.fork = fork
         options.forkOptions.executable = executable
-        DefaultJavaCompileSpecFactory factory = new DefaultJavaCompileSpecFactory(options)
+        DefaultJavaCompileSpecFactory factory = new DefaultJavaCompileSpecFactory(options, getToolchain())
 
         when:
         def spec = factory.create()

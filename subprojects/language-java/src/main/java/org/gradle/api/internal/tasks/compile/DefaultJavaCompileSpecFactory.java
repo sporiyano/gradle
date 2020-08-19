@@ -17,10 +17,11 @@
 package org.gradle.api.internal.tasks.compile;
 
 import org.gradle.api.tasks.compile.CompileOptions;
+import org.gradle.jvm.toolchain.internal.JavaToolchain;
 
 public class DefaultJavaCompileSpecFactory extends AbstractJavaCompileSpecFactory<DefaultJavaCompileSpec> {
-    public DefaultJavaCompileSpecFactory(CompileOptions compileOptions) {
-        super(compileOptions);
+    public DefaultJavaCompileSpecFactory(CompileOptions compileOptions, JavaToolchain toolchain) {
+        super(compileOptions, toolchain);
     }
 
     @Override
