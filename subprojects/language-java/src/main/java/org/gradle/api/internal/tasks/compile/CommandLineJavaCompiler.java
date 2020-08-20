@@ -68,7 +68,6 @@ public class CommandLineJavaCompiler implements Compiler<JavaCompileSpec>, Seria
         handle.start();
         ExecResult result = handle.waitForFinish();
         if (result.getExitValue() != 0) {
-            result.rethrowFailure();
             throw new CompilationFailedException(result.getExitValue());
         }
     }
