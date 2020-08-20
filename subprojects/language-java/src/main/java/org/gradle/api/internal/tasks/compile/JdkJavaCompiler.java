@@ -19,7 +19,6 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.internal.tasks.compile.processing.AnnotationProcessorDeclaration;
 import org.gradle.api.internal.tasks.compile.reflect.GradleStandardJavaFileManager;
 import org.gradle.api.tasks.WorkResult;
-import org.gradle.internal.Factory;
 import org.gradle.internal.classpath.DefaultClassPath;
 import org.gradle.language.base.internal.compile.Compiler;
 import org.slf4j.Logger;
@@ -39,10 +38,10 @@ import java.util.Set;
 
 public class JdkJavaCompiler implements Compiler<JavaCompileSpec>, Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdkJavaCompiler.class);
-    private final Factory<JavaCompiler> javaHomeBasedJavaCompilerFactory;
+    private final JavaHomeBasedJavaCompilerFactory javaHomeBasedJavaCompilerFactory;
 
     @Inject
-    public JdkJavaCompiler(Factory<JavaCompiler> javaHomeBasedJavaCompilerFactory) {
+    public JdkJavaCompiler(JavaHomeBasedJavaCompilerFactory javaHomeBasedJavaCompilerFactory) {
         this.javaHomeBasedJavaCompilerFactory = javaHomeBasedJavaCompilerFactory;
     }
 

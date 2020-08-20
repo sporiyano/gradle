@@ -18,9 +18,12 @@ package org.gradle.api.internal.tasks.compile;
 
 import org.gradle.api.tasks.compile.CompileOptions;
 import org.gradle.internal.Factory;
+import org.gradle.internal.jvm.Jvm;
 import org.gradle.jvm.toolchain.internal.JavaToolchain;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.util.function.Function;
 
 public abstract class AbstractJavaCompileSpecFactory<T extends JavaCompileSpec> implements Factory<T> {
     private final CompileOptions compileOptions;
@@ -38,16 +41,33 @@ public abstract class AbstractJavaCompileSpecFactory<T extends JavaCompileSpec> 
 
     @Override
     public T create() {
-        if (compileOptions.isFork()) {
-            final boolean hasCustomExecutable = compileOptions.getForkOptions().getExecutable() != null || compileOptions.getForkOptions().getJavaHome() != null;
-            if (hasCustomExecutable && toolchain == null) {
-                return getCommandLineSpec();
-            } else {
-                return getForkingSpec();
-            }
+        if (requiresCliCompiler()) {
+            return getCommandLineSpec();
+        } else if (compileOptions.isFork()) {
+            return getForkingSpec();
         } else {
-            return getDefaultSpec();
+            if (isCurrentVmOurToolchain()) {
+                return getDefaultSpec();
+            }
+            return getForkingSpec();
         }
+    }
+
+    private boolean requiresCliCompiler() {
+        String executable = compileOptions.getForkOptions().getExecutable();
+        File javaHome = compileOptions.getForkOptions().getJavaHome();
+        boolean hasCustomExecutable = isCustomized(executable, j -> j.getJavaExecutable().getAbsolutePath());
+        boolean hasCustomJavaHome = isCustomized(javaHome, Jvm::getJavaHome);
+        boolean hasCustomToolchain = hasCustomExecutable || hasCustomJavaHome;
+        return hasCustomToolchain && toolchain == null && compileOptions.isFork();
+    }
+
+    private <T> boolean isCustomized(T value, Function<Jvm, T> currentJvmSupplier) {
+        return value != null && !value.equals(currentJvmSupplier.apply(Jvm.current()));
+    }
+
+    boolean isCurrentVmOurToolchain() {
+        return toolchain == null || toolchain.getJavaHome().equals(Jvm.current().getJavaHome());
     }
 
     abstract protected T getCommandLineSpec();

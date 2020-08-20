@@ -66,6 +66,7 @@ class JavaCompileToolchainIntegrationTest extends AbstractPluginIntegrationTest 
         'current'      | Jvm.current()
     }
 
+    @Requires(adhoc = { AvailableJavaHomes.getJdk(JavaVersion.VERSION_14) != null })
     def "can set explicit toolchain used by JavaCompile"() {
         def someJdk = AvailableJavaHomes.getJdk(JavaVersion.VERSION_14)
         buildFile << """
