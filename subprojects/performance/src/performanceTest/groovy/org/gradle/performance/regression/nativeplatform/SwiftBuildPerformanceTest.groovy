@@ -54,7 +54,7 @@ class SwiftBuildPerformanceTest extends AbstractCrossVersionGradleProfilerPerfor
         runner.testProject = testProject
         runner.tasksToRun = ["assemble"]
         runner.gradleOpts = ["-Xms$maxMemory", "-Xmx$maxMemory"]
-        runner.addBuildExperimentListener(new ChangeSwiftFileMutator(fileToChange))
+        runner.addBuildMutator { invocationSettings -> new ChangeSwiftFileMutator(invocationSettings.projectDir, fileToChange) }
 
         when:
         def result = runner.run()
@@ -69,9 +69,8 @@ class SwiftBuildPerformanceTest extends AbstractCrossVersionGradleProfilerPerfor
     }
 
     private static class ChangeSwiftFileMutator extends AbstractFileChangeMutator {
-
-        ChangeSwiftFileMutator(String sourceFilePath) {
-            super(sourceFilePath)
+        ChangeSwiftFileMutator(File projectDir, String sourceFilePath) {
+            super(projectDir, sourceFilePath)
             if (!sourceFilePath.endsWith('.swift')) {
                 throw new IllegalArgumentException('Can only modify Swift source')
             }

@@ -15,11 +15,10 @@
  */
 package org.gradle.performance.regression.inception
 
-
 import org.gradle.performance.AbstractCrossVersionGradleProfilerPerformanceTest
 import org.gradle.performance.categories.SlowPerformanceRegressionTest
-import org.gradle.performance.fixture.BuildExperimentInvocationInfo
-import org.gradle.performance.fixture.BuildExperimentListenerAdapter
+import org.gradle.profiler.BuildContext
+import org.gradle.profiler.BuildMutator
 import org.gradle.util.GradleVersion
 import org.junit.experimental.categories.Category
 import spock.lang.Issue
@@ -70,19 +69,21 @@ class GradleInceptionPerformanceTest extends AbstractCrossVersionGradleProfilerP
 
         and:
         def changingClassFilePath = "buildSrc/${buildSrcProjectDir}src/main/groovy/ChangingClass.groovy"
-        runner.addBuildExperimentListener(new BuildExperimentListenerAdapter() {
-            @Override
-            void beforeInvocation(BuildExperimentInvocationInfo invocationInfo) {
-                new File(invocationInfo.projectDir, changingClassFilePath).tap {
-                    parentFile.mkdirs()
-                    text = """
+        runner.addBuildMutator { invocationSettings ->
+            new BuildMutator() {
+                @Override
+                void beforeBuild(BuildContext context) {
+                    new File(invocationSettings.projectDir, changingClassFilePath).tap {
+                        parentFile.mkdirs()
+                        text = """
                         class ChangingClass {
-                            void changingMethod${invocationInfo.phase}${invocationInfo.iterationNumber}() {}
+                            void changingMethod${context.phase}${context.iteration}() {}
                         }
                     """.stripIndent()
+                    }
                 }
             }
-        })
+        }
 
         when:
         def result = runner.run()
@@ -91,9 +92,9 @@ class GradleInceptionPerformanceTest extends AbstractCrossVersionGradleProfilerP
         result.assertCurrentVersionHasNotRegressed()
 
         where:
-        testProject                         | buildSrcProjectDir   | runs
-        MEDIUM_MONOLITHIC_JAVA_PROJECT      | ""                   | 40
-        LARGE_JAVA_MULTI_PROJECT            | ""                   | 20
-        LARGE_JAVA_MULTI_PROJECT_KOTLIN_DSL | ""                   | 10
+        testProject                         | buildSrcProjectDir | runs
+        MEDIUM_MONOLITHIC_JAVA_PROJECT      | ""                 | 40
+        LARGE_JAVA_MULTI_PROJECT            | ""                 | 20
+        LARGE_JAVA_MULTI_PROJECT_KOTLIN_DSL | ""                 | 10
     }
 }

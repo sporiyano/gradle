@@ -37,19 +37,10 @@ class GradleInternalCrossVersionPerformanceTestRunner extends AbstractCrossVersi
         super(experimentRunner, resultsStore, reporter, releases, buildContext)
     }
 
-    void addBuildExperimentListener(BuildExperimentListener buildExperimentListener) {
-        buildExperimentListeners.addListener(buildExperimentListener)
-    }
-
-    void addInvocationCustomizer(InvocationCustomizer invocationCustomizer) {
-        invocationCustomizers.addCustomizer(invocationCustomizer)
-    }
-
     @Override
     protected void configureGradleBuildExperimentSpec(GradleBuildExperimentSpec.GradleBuilder builder) {
         builder
             .listener(buildExperimentListeners)
             .invocationCustomizer(invocationCustomizers)
-
     }
 }

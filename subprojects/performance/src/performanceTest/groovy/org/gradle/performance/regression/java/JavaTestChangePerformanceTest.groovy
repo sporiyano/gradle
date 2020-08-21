@@ -34,7 +34,7 @@ class JavaTestChangePerformanceTest extends AbstractCrossVersionGradleProfilerPe
         runner.warmUpRuns = warmUpRuns
         runner.runs = runs
         runner.tasksToRun = ['test']
-        runner.addBuildExperimentListener(new ApplyNonAbiChangeToJavaSourceFileMutator(testProject.config.fileToChangeByScenario['test']))
+        runner.addBuildMutator { new ApplyNonAbiChangeToJavaSourceFileMutator(it.projectDir, testProject.config.fileToChangeByScenario['test']) }
         runner.targetVersions = ["6.7-20200723220251+0000"]
 
         when:
