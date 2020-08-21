@@ -29,14 +29,22 @@ class DaemonJavaCompilerIntegrationTest extends JavaCompilerIntegrationSpec {
         buildFile << """
             import org.gradle.workers.internal.WorkerDaemonClientsManager
             import org.gradle.internal.jvm.Jvm
-            
-            tasks.withType(JavaCompile) { 
+
+            tasks.withType(JavaCompile) {
                 options.forkOptions.memoryInitialSize = "128m"
                 options.forkOptions.memoryMaximumSize = "256m"
                 options.forkOptions.jvmArgs = ["-Dfoo=bar"]
-                
+
                 doLast {
-                    assert services.get(WorkerDaemonClientsManager).idleClients.find { 
+                    // TODO: for test failure diagnostics
+                    println "idle clients:"
+                    services.get(WorkerDaemonClientsManager).idleClients.each {
+                        println it
+                        println it.forkOptions.javaForkOptions.executable
+                        println Jvm.current().javaExecutable
+                        println "---"
+                    }
+                    assert services.get(WorkerDaemonClientsManager).idleClients.find {
                         new File(it.forkOptions.javaForkOptions.executable).canonicalPath == Jvm.current().javaExecutable.canonicalPath &&
                         it.forkOptions.javaForkOptions.minHeapSize == "128m" &&
                         it.forkOptions.javaForkOptions.maxHeapSize == "256m" &&
@@ -53,7 +61,7 @@ class DaemonJavaCompilerIntegrationTest extends JavaCompilerIntegrationSpec {
     def "handles -sourcepath being specified"() {
         goodCode()
         buildFile << """
-            tasks.withType(JavaCompile) { 
+            tasks.withType(JavaCompile) {
                 options.sourcepath = project.layout.files()
             }
         """
@@ -69,7 +77,7 @@ class DaemonJavaCompilerIntegrationTest extends JavaCompilerIntegrationSpec {
         def bootClasspath = TextUtil.escapeString(jre.absolutePath) + "/lib/rt.jar"
         goodCode()
         buildFile << """
-            tasks.withType(JavaCompile) { 
+            tasks.withType(JavaCompile) {
                 options.bootstrapClasspath = project.layout.files("$bootClasspath")
             }
         """
