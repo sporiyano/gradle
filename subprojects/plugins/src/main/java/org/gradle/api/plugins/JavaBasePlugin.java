@@ -52,6 +52,7 @@ import org.gradle.api.tasks.testing.JUnitXmlReport;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.internal.deprecation.DeprecatableConfiguration;
 import org.gradle.jvm.toolchain.JavaInstallationRegistry;
+import org.gradle.jvm.toolchain.internal.DefaultToolchainJavaCompiler;
 import org.gradle.jvm.toolchain.internal.JavaToolchain;
 import org.gradle.jvm.toolchain.internal.JavaToolchainQueryService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
@@ -309,12 +310,15 @@ public class JavaBasePlugin implements Plugin<Project> {
         });
     }
 
-    private Callable<Object> determineCompatibility(AbstractCompile compile, Supplier<JavaVersion> javaVersionSupplier) {
+    private Callable<String> determineCompatibility(AbstractCompile compile, Supplier<JavaVersion> javaVersionSupplier) {
         return () -> {
             if (compile instanceof JavaCompile) {
                 JavaCompile javaCompile = (JavaCompile) compile;
                 if (javaCompile.getOptions().getRelease().isPresent()) {
                     return JavaVersion.toVersion(javaCompile.getOptions().getRelease().get()).toString();
+                }
+                if (javaCompile.getJavaCompiler().isPresent()) {
+                    return ((DefaultToolchainJavaCompiler) javaCompile.getJavaCompiler().get()).getJavaToolchain().getJavaMajorVersion().toString();
                 }
             }
             return javaVersionSupplier.get().toString();
