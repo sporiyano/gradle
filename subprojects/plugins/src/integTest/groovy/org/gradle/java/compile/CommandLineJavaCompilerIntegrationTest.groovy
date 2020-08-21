@@ -17,18 +17,20 @@
 
 package org.gradle.java.compile
 
-
 import org.gradle.integtests.fixtures.AvailableJavaHomes
 import org.gradle.util.TextUtil
 import spock.lang.IgnoreIf
 
 @IgnoreIf({ !AvailableJavaHomes.differentJdk.getExecutable("javac").exists() })
 class CommandLineJavaCompilerIntegrationTest extends JavaCompilerIntegrationSpec {
-    def compilerConfiguration() {
 
-        def javaHome = TextUtil.escapeString(AvailableJavaHomes.differentJdk.javaHome.absolutePath)
+    def compilerConfiguration() {
+        def jdk = AvailableJavaHomes.differentJdk
+        def javaHome = TextUtil.escapeString(jdk.javaHome.absolutePath)
 
         """
+java.targetCompatibility = JavaVersion.${jdk.javaVersion.name()}
+java.sourceCompatibility = JavaVersion.${jdk.javaVersion.name()}
 compileJava.options.with {
     fork = true
     forkOptions.javaHome = file("$javaHome")
