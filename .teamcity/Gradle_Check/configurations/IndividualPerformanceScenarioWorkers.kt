@@ -20,10 +20,17 @@ class IndividualPerformanceScenarioWorkers(model: CIBuildModel, os: Os = Os.linu
     applyPerformanceTestSettings(os = os, timeout = 420)
     artifactRules = individualPerformanceTestArtifactRules
 
+    if (os == Os.windows) {
+        // to avoid pathname too long error
+        vcs {
+            checkoutDir = "C:\\gradle"
+        }
+    }
+
     params {
         param("baselines", "defaults")
         param("templates", "")
-        param("channel", "commits")
+        param("channel", os.name)
         param("checks", "all")
         param("runs", "defaults")
         param("warmups", "defaults")
