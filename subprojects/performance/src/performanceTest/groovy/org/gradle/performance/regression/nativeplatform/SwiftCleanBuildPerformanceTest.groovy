@@ -19,10 +19,13 @@ package org.gradle.performance.regression.nativeplatform
 import org.gradle.initialization.ParallelismBuildOptions
 import org.gradle.performance.AbstractCrossVersionGradleProfilerPerformanceTest
 import org.gradle.performance.categories.SlowPerformanceRegressionTest
+import org.gradle.util.Requires
+import org.gradle.util.TestPrecondition
 import org.junit.experimental.categories.Category
 import spock.lang.Unroll
 
 @Category(SlowPerformanceRegressionTest)
+@Requires(TestPrecondition.NOT_WINDOWS)
 class SwiftCleanBuildPerformanceTest extends AbstractCrossVersionGradleProfilerPerformanceTest {
 
     def setup() {

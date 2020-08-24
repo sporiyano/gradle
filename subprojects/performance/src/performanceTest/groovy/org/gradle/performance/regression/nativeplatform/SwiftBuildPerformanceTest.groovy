@@ -19,8 +19,11 @@ package org.gradle.performance.regression.nativeplatform
 import org.gradle.initialization.ParallelismBuildOptions
 import org.gradle.performance.AbstractCrossVersionGradleInternalPerformanceTest
 import org.gradle.performance.mutator.AbstractFileChangeMutator
+import org.gradle.util.Requires
+import org.gradle.util.TestPrecondition
 import spock.lang.Unroll
 
+@Requires(TestPrecondition.NOT_WINDOWS)
 class SwiftBuildPerformanceTest extends AbstractCrossVersionGradleInternalPerformanceTest {
 
     def setup() {
