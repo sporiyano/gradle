@@ -14,46 +14,38 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
+    id("gradlebuild.jmh")
 }
 
 dependencies {
-    api(project(":buildCacheBase"))
+    api(project(":build-cache-base"))
     api(project(":snapshots"))
 
-    implementation(project(":baseServices"))
-    implementation(project(":coreApi"))
+    implementation(project(":base-services"))
+    implementation(project(":core-api"))
     implementation(project(":files"))
     implementation(project(":native"))
-    implementation(project(":persistentCache"))
+    implementation(project(":persistent-cache"))
     implementation(project(":resources"))
     implementation(project(":logging"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_io"))
-    implementation(library("inject"))
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsIo)
+    implementation(libs.inject)
 
-    jmhImplementation(library("ant")) {
-        version {
-            prefer(libraryVersion("ant"))
-        }
-    }
+    jmhImplementation(platform(project(":distributions-dependencies")))
+    jmhImplementation(libs.ant)
+    jmhImplementation(libs.commonsCompress)
+    jmhImplementation(libs.aircompressor)
+    jmhImplementation(libs.snappy)
+    jmhImplementation(libs.jtar)
 
-    jmhImplementation(library("commons_compress")) {
-        version {
-            prefer(libraryVersion("commons_compress"))
-        }
-    }
-
-    jmhImplementation("io.airlift:aircompressor:0.8")
-    jmhImplementation("org.iq80.snappy:snappy:0.4")
-    jmhImplementation("org.kamranzafar:jtar:2.3")
-
-    testImplementation(project(":modelCore"))
-    testImplementation(project(":fileCollections"))
+    testImplementation(project(":model-core"))
+    testImplementation(project(":file-collections"))
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":baseServices")))
+    testImplementation(testFixtures(project(":base-services")))
 
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }

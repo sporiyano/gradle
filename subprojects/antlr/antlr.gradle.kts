@@ -15,37 +15,37 @@
  */
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":processServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":process-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
     implementation(project(":plugins"))
     implementation(project(":workers"))
     implementation(project(":files"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("groovy"))
-    implementation(library("guava"))
-    implementation(library("inject"))
+    implementation(libs.slf4jApi)
+    implementation(libs.groovy)
+    implementation(libs.guava)
+    implementation(libs.inject)
 
     compileOnly("antlr:antlr:2.7.7") {
         because("this dependency is downloaded by the antlr plugin")
     }
 
-    testImplementation(project(":baseServicesGroovy"))
-    testImplementation(project(":fileCollections"))
+    testImplementation(project(":base-services-groovy"))
+    testImplementation(project(":file-collections"))
     testImplementation(testFixtures(project(":core")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
 }
 
 classycle {

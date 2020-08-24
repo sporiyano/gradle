@@ -1,5 +1,7 @@
+import gradlebuild.basics.googleApisJs
+
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 val implementationResources: Configuration by configurations.creating
@@ -9,29 +11,29 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":fileCollections"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":file-collections"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
 
-    implementation(library("groovy"))
-    implementation(library("guava"))
-    implementation(library("inject"))
-    implementation(library("jatl"))
+    implementation(libs.groovy)
+    implementation(libs.guava)
+    implementation(libs.inject)
+    implementation(libs.jatl)
 
-    implementationResources("jquery:jquery.min:3.4.1@js")
+    implementationResources("jquery:jquery.min:3.5.1@js")
 
-    testImplementation(project(":processServices"))
-    testImplementation(project(":baseServicesGroovy"))
-    testImplementation(testLibrary("jsoup"))
+    testImplementation(project(":process-services"))
+    testImplementation(project(":base-services-groovy"))
+    testImplementation(libs.jsoup)
     testImplementation(testFixtures(project(":core")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsJvm")) {
+    integTestDistributionRuntimeOnly(project(":distributions-jvm")) {
         because("BuildDashboard has specific support for JVM plugins (CodeNarc, JaCoCo)")
     }
 }
@@ -45,12 +47,11 @@ classycle {
     excludePatterns.set(listOf("org/gradle/api/reporting/internal/**"))
 }
 
-val generatedResourcesDir = gradlebuildJava.generatedResourcesDir
-
-val reportResources by tasks.registering(Copy::class) {
+val reportResources = tasks.register<Copy>("reportResources") {
     from(implementationResources)
-    into(generatedResourcesDir.dir("org/gradle/reporting").get().asFile)
+    into(layout.buildDirectory.file("generated-resources/report-resources/org/gradle/reporting"))
 }
+
 sourceSets.main {
-    output.dir(generatedResourcesDir, "builtBy" to reportResources)
+    output.dir(reportResources.map { it.destinationDir.parentFile.parentFile.parentFile })
 }

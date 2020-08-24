@@ -1,31 +1,31 @@
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
+import gradlebuild.cleanup.WhenNotEmpty
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
-    implementation(project(":baseServicesGroovy"))
+    implementation(project(":base-services"))
+    implementation(project(":base-services-groovy"))
     implementation(project(":files"))
     implementation(project(":logging"))
-    implementation(project(":persistentCache"))
-    implementation(project(":processServices"))
+    implementation(project(":persistent-cache"))
+    implementation(project(":process-services"))
     implementation(project(":resources"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("groovy"))
-    implementation(library("ant"))
-    implementation(library("guava"))
-    implementation(library("commons_io"))
-    implementation(library("commons_lang"))
-    implementation(library("inject"))
+    implementation(libs.slf4jApi)
+    implementation(libs.groovy)
+    implementation(libs.ant)
+    implementation(libs.guava)
+    implementation(libs.commonsIo)
+    implementation(libs.commonsLang)
+    implementation(libs.inject)
 
-    testImplementation(library("asm"))
-    testImplementation(library("asm_commons"))
+    testImplementation(libs.asm)
+    testImplementation(libs.asmCommons)
     testImplementation(testFixtures(project(":logging")))
 
-    testFixturesImplementation(project(":baseServices"))
+    testFixturesImplementation(project(":base-services"))
 }
 
 classycle {

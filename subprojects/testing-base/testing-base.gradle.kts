@@ -13,54 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 gradlebuildJava.usedInWorkers()
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":messaging"))
     implementation(project(":native"))
     implementation(project(":logging"))
-    implementation(project(":processServices"))
-    implementation(project(":workerProcesses"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":process-services"))
+    implementation(project(":worker-processes"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":baseServicesGroovy"))
+    implementation(project(":base-services-groovy"))
     implementation(project(":reporting"))
-    implementation(project(":platformBase"))
+    implementation(project(":platform-base"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("groovy"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("commons_io"))
-    implementation(library("kryo"))
-    implementation(library("inject"))
-    implementation(library("ant")) // only used for DateUtils
+    implementation(libs.slf4jApi)
+    implementation(libs.groovy)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.commonsIo)
+    implementation(libs.kryo)
+    implementation(libs.inject)
+    implementation(libs.ant) // only used for DateUtils
 
-    testImplementation(project(":fileCollections"))
+    testImplementation(project(":file-collections"))
     testImplementation(testFixtures(project(":core")))
     testImplementation(testFixtures(project(":messaging")))
-    testImplementation(testFixtures(project(":platformBase")))
+    testImplementation(testFixtures(project(":platform-base")))
     testImplementation(testFixtures(project(":logging")))
-    testImplementation(testFixtures(project(":baseServices")))
+    testImplementation(testFixtures(project(":base-services")))
 
-    testFixturesImplementation(project(":baseServices"))
-    testFixturesImplementation(project(":modelCore"))
-    testFixturesImplementation(project(":internalIntegTesting"))
-    testFixturesImplementation(library("guava"))
-    testFixturesImplementation(testLibrary("jsoup"))
+    testFixturesImplementation(project(":base-services"))
+    testFixturesImplementation(project(":model-core"))
+    testFixturesImplementation(project(":internal-integ-testing"))
+    testFixturesImplementation(libs.guava)
+    testFixturesImplementation(libs.jsoup)
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 strictCompile {

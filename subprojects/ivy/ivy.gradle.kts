@@ -14,67 +14,69 @@
  * limitations under the License.
  */
 
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.cleanup.WhenNotEmpty
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":baseServicesGroovy")) // for 'Specs'
-    implementation(project(":fileCollections"))
+    implementation(project(":base-services-groovy")) // for 'Specs'
+    implementation(project(":file-collections"))
     implementation(project(":resources"))
     implementation(project(":publish"))
     implementation(project(":plugins")) // for base plugin to get archives conf
-    implementation(project(":pluginUse"))
-    implementation(project(":dependencyManagement"))
+    implementation(project(":plugin-use"))
+    implementation(project(":dependency-management"))
 
-    implementation(library("groovy")) // for 'Closure' and 'Task.property(String propertyName) throws groovy.lang.MissingPropertyException'
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("inject"))
-    implementation(library("ivy"))
+    implementation(libs.groovy) // for 'Closure' and 'Task.property(String propertyName) throws groovy.lang.MissingPropertyException'
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.inject)
+    implementation(libs.ivy)
 
     testImplementation(project(":native"))
-    testImplementation(project(":processServices"))
+    testImplementation(project(":process-services"))
     testImplementation(project(":snapshots"))
 
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":modelCore")))
-    testImplementation(testFixtures(project(":platformBase")))
-    testImplementation(testFixtures(project(":dependencyManagement")))
+    testImplementation(testFixtures(project(":model-core")))
+    testImplementation(testFixtures(project(":platform-base")))
+    testImplementation(testFixtures(project(":dependency-management")))
 
     integTestImplementation(project(":ear"))
-    integTestImplementation(library("slf4j_api"))
-    integTestImplementation(testLibrary("jetty"))
+    integTestImplementation(libs.slf4jApi)
+    integTestImplementation(libs.jetty)
 
-    integTestRuntimeOnly(project(":resourcesS3"))
-    integTestRuntimeOnly(project(":resourcesSftp"))
-    integTestRuntimeOnly(project(":apiMetadata"))
+    integTestRuntimeOnly(project(":resources-s3"))
+    integTestRuntimeOnly(project(":resources-sftp"))
+    integTestRuntimeOnly(project(":api-metadata"))
 
-    testFixturesApi(project(":baseServices")) {
+    testFixturesApi(project(":base-services")) {
         because("Test fixtures export the Action class")
     }
-    testFixturesApi(project(":coreApi")) {
+    testFixturesApi(project(":core-api")) {
         because("Test fixtures export the RepositoryHandler class")
     }
     testFixturesImplementation(project(":logging"))
-    testFixturesImplementation(project(":dependencyManagement"))
-    testFixturesImplementation(project(":internalIntegTesting"))
-    testFixturesImplementation(library("slf4j_api"))
-    testLibraries("sshd").forEach { testFixturesImplementation(it) }
+    testFixturesImplementation(project(":dependency-management"))
+    testFixturesImplementation(project(":internal-integ-testing"))
+    testFixturesImplementation(libs.slf4jApi)
+    testFixturesImplementation(libs.sshdCore)
+    testFixturesImplementation(libs.sshdScp)
+    testFixturesImplementation(libs.sshdSftp)
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsJvm"))
-    crossVersionTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-jvm"))
+    crossVersionTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 testFilesCleanup {

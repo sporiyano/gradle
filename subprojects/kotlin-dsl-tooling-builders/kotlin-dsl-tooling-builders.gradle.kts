@@ -14,39 +14,38 @@
  * limitations under the License.
  */
 
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
+import gradlebuild.cleanup.WhenNotEmpty
 
 
 plugins {
-    gradlebuild.distribution.`implementation-kotlin`
+    id("gradlebuild.distribution.implementation-kotlin")
 }
 
 description = "Kotlin DSL Tooling Builders for IDEs"
 
 dependencies {
-    implementation(project(":kotlinDsl"))
+    implementation(project(":kotlin-dsl"))
 
-    implementation(project(":baseServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":base-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
     implementation(project(":resources"))
-    implementation(project(":platformBase"))
-    implementation(project(":platformJvm"))
+    implementation(project(":platform-base"))
+    implementation(project(":platform-jvm"))
     implementation(project(":plugins"))
-    implementation(project(":toolingApi"))
+    implementation(project(":tooling-api"))
 
-    testImplementation(project(":kotlinDslTestFixtures"))
-    integTestImplementation(project(":kotlinDslTestFixtures"))
-    integTestImplementation(project(":internalTesting"))
+    testImplementation(testFixtures(project(":kotlin-dsl")))
+    integTestImplementation(project(":internal-testing"))
 
-    crossVersionTestImplementation(project(":persistentCache"))
-    crossVersionTestImplementation(library("slf4j_api"))
-    crossVersionTestImplementation(library("guava"))
-    crossVersionTestImplementation(library("ant"))
+    crossVersionTestImplementation(project(":persistent-cache"))
+    crossVersionTestImplementation(libs.slf4jApi)
+    crossVersionTestImplementation(libs.guava)
+    crossVersionTestImplementation(libs.ant)
 
-    integTestDistributionRuntimeOnly(project(":distributionsBasics"))
-    crossVersionTestDistributionRuntimeOnly(project(":distributionsBasics"))
+    integTestDistributionRuntimeOnly(project(":distributions-basics"))
+    crossVersionTestDistributionRuntimeOnly(project(":distributions-basics"))
 }
 
 testFilesCleanup {

@@ -1,6 +1,3 @@
-import org.gradle.util.VersionNumber
-import java.util.*
-
 /*
  * Copyright 2013 the original author or authors.
  *
@@ -16,49 +13,53 @@ import java.util.*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import gradlebuild.basics.util.ReproduciblePropertiesWriter
+import java.util.Properties
+import org.gradle.util.VersionNumber
+
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":fileCollections"))
-    implementation(project(":dependencyManagement"))
-    implementation(project(":platformBase"))
-    implementation(project(":platformNative"))
+    implementation(project(":file-collections"))
+    implementation(project(":dependency-management"))
+    implementation(project(":platform-base"))
+    implementation(project(":platform-native"))
     implementation(project(":plugins"))
     implementation(project(":wrapper"))
 
-    implementation(library("groovy"))
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("inject"))
-    implementation("org.codehaus.plexus:plexus-container-default")
-    implementation("org.apache.maven:maven-compat")
-    implementation("org.apache.maven:maven-plugin-api")
+    implementation(libs.groovy)
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.inject)
+    implementation(libs.plexusContainer)
+    implementation(libs.maven3Compat)
+    implementation(libs.maven3PluginApi)
 
     testImplementation(project(":cli"))
-    testImplementation(project(":baseServicesGroovy"))
+    testImplementation(project(":base-services-groovy"))
     testImplementation(project(":native"))
     testImplementation(project(":snapshots"))
-    testImplementation(project(":processServices"))
+    testImplementation(project(":process-services"))
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":platformNative")))
+    testImplementation(testFixtures(project(":platform-native")))
 
-    testFixturesImplementation(project(":baseServices"))
+    testFixturesImplementation(project(":base-services"))
 
     integTestImplementation(project(":native"))
-    integTestImplementation(testLibrary("jetty"))
+    integTestImplementation(libs.jetty)
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
 }
 
 tasks {
@@ -92,7 +93,7 @@ tasks {
             findLatest("kotlin", "org.jetbrains.kotlin:kotlin-gradle-plugin:(1.3,)", versionProperties)
 
             val libraryVersionFile = file("src/main/resources/org/gradle/buildinit/tasks/templates/library-versions.properties")
-            org.gradle.build.ReproduciblePropertiesWriter.store(
+            ReproduciblePropertiesWriter.store(
                 versionProperties,
                 libraryVersionFile,
                 "Generated file, please do not edit - Version values used in build-init templates"
@@ -130,6 +131,6 @@ val devSuffixes = arrayOf(
     "-dev-\\d+-\\d+",
     "-rc-?\\d+",
     "-RC-?\\d+",
-    "-M\\d+(-release-\\d+)?",
+    "-M.+",
     "-eap-?\\d+"
 )

@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import accessors.groovy
-import org.gradle.gradlebuild.BuildEnvironment
-import org.gradle.gradlebuild.test.integrationtests.addDependenciesAndConfigurations
-import org.gradle.gradlebuild.test.integrationtests.SmokeTest
-import org.gradle.gradlebuild.versioning.DetermineCommitId
-import org.gradle.testing.performance.generator.tasks.RemoteProject
+import gradlebuild.basics.BuildEnvironment
+import gradlebuild.basics.accessors.groovy
+import gradlebuild.integrationtests.addDependenciesAndConfigurations
+import gradlebuild.integrationtests.tasks.SmokeTest
+import gradlebuild.performance.generator.tasks.RemoteProject
 
 plugins {
-    gradlebuild.internal.java
+    id("gradlebuild.internal.java")
 }
 
 val smokeTest: SourceSet by sourceSets.creating {
@@ -35,24 +34,24 @@ val smokeTestImplementation: Configuration by configurations.getting
 val smokeTestDistributionRuntimeOnly: Configuration by configurations.getting
 
 dependencies {
-    smokeTestImplementation(project(":baseServices"))
-    smokeTestImplementation(project(":coreApi"))
-    smokeTestImplementation(project(":testKit"))
+    smokeTestImplementation(project(":base-services"))
+    smokeTestImplementation(project(":core-api"))
+    smokeTestImplementation(project(":test-kit"))
     smokeTestImplementation(project(":launcher"))
-    smokeTestImplementation(project(":persistentCache"))
-    smokeTestImplementation(project(":jvmServices"))
-    smokeTestImplementation(project(":buildOption"))
-    smokeTestImplementation(library("commons_io"))
-    smokeTestImplementation(library("jgit"))
-    smokeTestImplementation(library("gradleProfiler")) {
+    smokeTestImplementation(project(":persistent-cache"))
+    smokeTestImplementation(project(":jvm-services"))
+    smokeTestImplementation(project(":build-option"))
+    smokeTestImplementation(libs.commonsIo)
+    smokeTestImplementation(libs.jgit)
+    smokeTestImplementation(libs.gradleProfiler) {
         because("Using build mutators to change a Java file")
     }
-    smokeTestImplementation(testLibrary("spock"))
+    smokeTestImplementation(libs.spock)
 
     smokeTestImplementation(testFixtures(project(":core")))
-    smokeTestImplementation(testFixtures(project(":versionControl")))
+    smokeTestImplementation(testFixtures(project(":version-control")))
 
-    smokeTestDistributionRuntimeOnly(project(":distributionsFull"))
+    smokeTestDistributionRuntimeOnly(project(":distributions-full"))
 }
 
 fun SmokeTest.configureForSmokeTest() {
@@ -67,10 +66,10 @@ tasks.register<SmokeTest>("smokeTest") {
     configureForSmokeTest()
 }
 
-tasks.register<SmokeTest>("instantSmokeTest") {
+tasks.register<SmokeTest>("configCacheSmokeTest") {
     description = "Runs Smoke tests with instant execution"
     configureForSmokeTest()
-    systemProperty("org.gradle.integtest.executer", "instant")
+    systemProperty("org.gradle.integtest.executer", "configCache")
 }
 
 plugins.withType<IdeaPlugin>().configureEach {
@@ -108,7 +107,7 @@ tasks {
 
     register<RemoteProject>("gradleBuildCurrent") {
         remoteUri.set(rootDir.absolutePath)
-        ref.set(rootProject.tasks.named<DetermineCommitId>("determineCommitId").flatMap { it.determinedCommitId })
+        ref.set(moduleIdentity.gradleBuildCommitId)
     }
 
     val remoteProjects = withType<RemoteProject>()

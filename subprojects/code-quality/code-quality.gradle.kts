@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
     implementation(project(":native"))
-    implementation(project(":processServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":process-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
     implementation(project(":plugins"))
     implementation(project(":workers"))
     implementation(project(":reporting"))
 
-    implementation(library("groovy"))
-    implementation(library("guava"))
-    implementation(library("inject"))
-    implementation(library("ant"))
+    implementation(libs.groovy)
+    implementation(libs.guava)
+    implementation(libs.inject)
+    implementation(libs.ant)
 
-    testImplementation(project(":fileCollections"))
+    testImplementation(project(":file-collections"))
     testImplementation(testFixtures(project(":core")))
 
     testFixturesImplementation(project(":core"))
-    testFixturesImplementation(project(":coreApi"))
-    testFixturesImplementation(project(":baseServices"))
+    testFixturesImplementation(project(":core-api"))
+    testFixturesImplementation(project(":base-services"))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
 }
 
 classycle {

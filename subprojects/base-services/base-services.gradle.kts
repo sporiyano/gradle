@@ -6,45 +6,34 @@
  */
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
+    id("gradlebuild.jmh")
 }
 
 gradlebuildJava.usedInWorkers()
 
 dependencies {
-    api(project(":baseAnnotations"))
+    api(project(":base-annotations"))
     api(project(":hashing"))
+    api(project(":build-operations"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("commons_io"))
-    implementation(library("asm"))
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.commonsIo)
+    implementation(libs.asm)
 
     integTestImplementation(project(":logging"))
 
-    testFixturesImplementation(library("guava"))
+    testFixturesImplementation(libs.guava)
     testImplementation(testFixtures(project(":core")))
 
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 
-    jmh("org.bouncycastle:bcprov-jdk15on:1.61")
-    jmh("com.google.guava:guava:27.1-android")
+    jmh(libs.bouncycastleProvider)
+    jmh(libs.guava)
 }
 
-jmh {
-    include = listOf("HashingAlgorithmsBenchmark")
-}
+jmh.include = listOf("HashingAlgorithmsBenchmark")
 
-val buildReceiptPackage = "org/gradle/"
-val buildReceiptResource = tasks.register<Copy>("buildReceiptResource") {
-    from(Callable { tasks.getByPath(":createBuildReceipt").outputs.files })
-    destinationDir = gradlebuildJava.generatedResourcesDir.dir(buildReceiptPackage).get().asFile
-}
-
-sourceSets.main {
-    output.dir(
-        gradlebuildJava.generatedResourcesDir,
-        "builtBy" to buildReceiptResource
-    )
-}
+moduleIdentity.createBuildReceipt()

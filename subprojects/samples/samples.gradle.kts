@@ -1,26 +1,26 @@
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.cleanup.WhenNotEmpty
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
 plugins {
-    gradlebuild.internal.java
+    id("gradlebuild.internal.java")
 }
 
 dependencies {
-    integTestImplementation(project(":baseServices"))
-    integTestImplementation(project(":coreApi"))
-    integTestImplementation(project(":processServices"))
-    integTestImplementation(project(":persistentCache"))
-    integTestImplementation(library("groovy"))
-    integTestImplementation(library("slf4j_api"))
-    integTestImplementation(library("guava"))
-    integTestImplementation(library("ant"))
-    integTestImplementation(testLibrary("sampleCheck")) {
+    integTestImplementation(project(":base-services"))
+    integTestImplementation(project(":core-api"))
+    integTestImplementation(project(":process-services"))
+    integTestImplementation(project(":persistent-cache"))
+    integTestImplementation(libs.groovy)
+    integTestImplementation(libs.slf4jApi)
+    integTestImplementation(libs.guava)
+    integTestImplementation(libs.ant)
+    integTestImplementation(libs.sampleCheck) {
         exclude(group = "org.codehaus.groovy", module = "groovy-all")
         exclude(module = "slf4j-simple")
     }
     integTestImplementation(testFixtures(project(":core")))
 
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
 }
 
 testFilesCleanup {

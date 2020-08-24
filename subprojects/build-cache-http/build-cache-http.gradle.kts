@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
-    implementation(project(":buildCache"))
-    implementation(project(":coreApi"))
+    implementation(project(":base-services"))
+    implementation(project(":build-cache"))
+    implementation(project(":core-api"))
     implementation(project(":core"))
     implementation(project(":logging"))
     implementation(project(":resources"))
-    implementation(project(":resourcesHttp"))
+    implementation(project(":resources-http"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_httpclient"))
-    implementation(library("commons_lang"))
-    implementation(library("inject"))
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsHttpclient)
+    implementation(libs.commonsLang)
+    implementation(libs.inject)
 
     testImplementation(testFixtures(project(":core")))
 
-    integTestImplementation(testLibrary("jetty"))
+    integTestImplementation(libs.jetty)
 
-    integTestDistributionRuntimeOnly(project(":distributionsBasics"))
+    integTestDistributionRuntimeOnly(project(":distributions-basics"))
 }

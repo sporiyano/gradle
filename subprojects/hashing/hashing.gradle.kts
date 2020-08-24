@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
-    gradlebuild.`publish-public-libraries`
+    id("gradlebuild.distribution.api-java")
+    id("gradlebuild.publish-public-libraries")
 }
 
-description = "Common shared classes without external dependencies"
+description = "Tools for creating secure hashes for files and other content"
 
 // We need this because org.gradle.internal.nativeintegration.filesystem.Stat is used in workers
 gradlebuildJava.usedInWorkers()
 
 dependencies {
-    implementation(project(":baseAnnotations"))
-    implementation(library("guava")) { version { require(libraryVersion("guava")) } }
+    implementation(project(":base-annotations"))
+    implementation(libs.guava)
 }

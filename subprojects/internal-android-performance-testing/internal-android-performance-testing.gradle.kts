@@ -1,5 +1,5 @@
 plugins {
-    gradlebuild.internal.java
+    id("gradlebuild.internal.java")
     application
 }
 
@@ -11,13 +11,13 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":baseServices"))
-    implementation(project(":toolingApi"))
+    implementation(project(":base-services"))
+    implementation(project(":tooling-api"))
     androidTools("com.android.tools.build:gradle:3.0.0")
 }
 
 application {
-    mainClassName = "org.gradle.performance.android.Main"
+    mainClass.set("org.gradle.performance.android.Main")
     applicationName = "android-test-app"
 }
 

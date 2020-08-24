@@ -13,66 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import gradlebuild.cleanup.WhenNotEmpty
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":fileCollections"))
+    implementation(project(":file-collections"))
     implementation(project(":resources"))
-    implementation(project(":baseServicesGroovy"))
-    implementation(project(":dependencyManagement"))
+    implementation(project(":base-services-groovy"))
+    implementation(project(":dependency-management"))
     implementation(project(":plugins"))
-    implementation(project(":pluginUse"))
+    implementation(project(":plugin-use"))
     implementation(project(":publish"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("groovy"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("inject"))
-    implementation(library("ant"))
-    implementation(library("ivy"))
-    implementation(library("maven3"))
-    implementation(library("pmaven_common"))
-    implementation(library("pmaven_groovy"))
-    implementation(library("maven3_wagon_file"))
-    implementation(library("maven3_wagon_http"))
-    implementation(library("plexus_container"))
-    implementation(library("aether_connector"))
+    implementation(libs.slf4jApi)
+    implementation(libs.groovy)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.inject)
+    implementation(libs.ant)
+    implementation(libs.ivy)
+    implementation(libs.maven3)
+    implementation(libs.pmavenCommon)
+    implementation(libs.pmavenGroovy)
+    implementation(libs.maven3WagonFile)
+    implementation(libs.maven3WagonHttp)
+    implementation(libs.plexusContainer)
+    implementation(libs.aetherConnector)
 
     testImplementation(project(":native"))
-    testImplementation(project(":processServices"))
+    testImplementation(project(":process-services"))
     testImplementation(project(":snapshots"))
-    testImplementation(project(":resourcesHttp"))
-    testImplementation(testLibrary("xmlunit"))
+    testImplementation(project(":resources-http"))
+    testImplementation(libs.xmlunit)
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":modelCore")))
-    testImplementation(testFixtures(project(":dependencyManagement")))
+    testImplementation(testFixtures(project(":model-core")))
+    testImplementation(testFixtures(project(":dependency-management")))
 
     integTestImplementation(project(":ear"))
-    integTestImplementation(testLibrary("jetty"))
+    integTestImplementation(libs.jetty)
 
-    testFixturesApi(project(":baseServices")) {
+    testFixturesApi(project(":base-services")) {
         because("Test fixtures export the Action class")
     }
-    testFixturesImplementation(project(":coreApi"))
-    testFixturesImplementation(project(":internalIntegTesting"))
-    testFixturesImplementation(project(":dependencyManagement"))
+    testFixturesImplementation(project(":core-api"))
+    testFixturesImplementation(project(":internal-integ-testing"))
+    testFixturesImplementation(project(":dependency-management"))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsJvm"))
-    crossVersionTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-jvm"))
+    crossVersionTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 strictCompile {

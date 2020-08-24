@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-kotlin`
+    id("gradlebuild.distribution.api-kotlin")
 }
 
 description = "Kotlin DSL Tooling Models for IDEs"
 
 dependencies {
-    api(project(":baseAnnotations"))
+    api(project(":base-annotations"))
 }

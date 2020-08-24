@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":messaging"))
-    implementation(project(":platformJvm"))
-    implementation(project(":languageJava"))
-    implementation(project(":testingBase"))
-    implementation(project(":testingJvm"))
+    implementation(project(":platform-jvm"))
+    implementation(project(":language-java"))
+    implementation(project(":testing-base"))
+    implementation(project(":testing-jvm"))
 
-    implementation(library("junit"))
-    implementation(library("junit_platform"))
+    implementation(libs.junit)
+    implementation(libs.junitPlatform)
 }

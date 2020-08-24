@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import build.futureKotlin
-import build.kotlin
-import codegen.GenerateKotlinDslPluginsExtensions
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
-import plugins.bundledGradlePlugin
+import gradlebuild.cleanup.WhenNotEmpty
 
 plugins {
-    gradlebuild.portalplugin.kotlin
+    id("gradlebuild.portalplugin.kotlin")
+    id("gradlebuild.kotlin-dsl-plugin-extensions")
 }
 
 description = "Kotlin DSL Gradle Plugins deployed to the Plugin Portal"
@@ -31,59 +28,41 @@ version = "1.3.7"
 
 base.archivesBaseName = "plugins"
 
-val generatedSourcesDir = layout.buildDirectory.dir("generated-sources/kotlin")
-
-val generateSources by tasks.registering(GenerateKotlinDslPluginsExtensions::class) {
-    outputDir.set(generatedSourcesDir)
-    kotlinDslPluginsVersion.set(project.version)
-}
-
-sourceSets.main {
-    kotlin.srcDir(files(generatedSourcesDir).builtBy(generateSources))
-}
-
-configurations {
-    compileOnly {
-        attributes {
-            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
-        }
-    }
-}
-
 dependencies {
-    compileOnly(project(":baseServices"))
+    compileOnly(project(":base-services"))
     compileOnly(project(":logging"))
-    compileOnly(project(":coreApi"))
-    compileOnly(project(":modelCore"))
+    compileOnly(project(":core-api"))
+    compileOnly(project(":model-core"))
     compileOnly(project(":core"))
-    compileOnly(project(":languageJvm"))
-    compileOnly(project(":languageJava"))
+    compileOnly(project(":language-jvm"))
+    compileOnly(project(":language-java"))
     compileOnly(project(":plugins"))
-    compileOnly(project(":pluginDevelopment"))
-    compileOnly(project(":kotlinDsl"))
+    compileOnly(project(":plugin-development"))
+    compileOnly(project(":kotlin-dsl"))
 
-    compileOnly(library("slf4j_api"))
-    compileOnly(library("inject"))
+    compileOnly(libs.slf4jApi)
+    compileOnly(libs.inject)
 
-    implementation(futureKotlin("stdlib-jdk8"))
-    implementation(futureKotlin("gradle-plugin"))
-    implementation(futureKotlin("sam-with-receiver"))
+    implementation(libs.futureKotlin("stdlib-jdk8"))
+    implementation(libs.futureKotlin("gradle-plugin"))
+    implementation(libs.futureKotlin("sam-with-receiver"))
 
-    integTestImplementation(project(":baseServices"))
+    integTestImplementation(project(":base-services"))
     integTestImplementation(project(":logging"))
-    integTestImplementation(project(":coreApi"))
-    integTestImplementation(project(":modelCore"))
+    integTestImplementation(project(":core-api"))
+    integTestImplementation(project(":model-core"))
     integTestImplementation(project(":core"))
     integTestImplementation(project(":plugins"))
-    integTestImplementation(project(":platformJvm"))
-    integTestImplementation(project(":kotlinDsl"))
-    integTestImplementation(project(":internalTesting"))
-    integTestImplementation(project(":kotlinDslTestFixtures"))
-    integTestImplementation(library("slf4j_api"))
-    integTestImplementation(testLibrary("mockito_kotlin"))
 
-    integTestDistributionRuntimeOnly(project(":distributionsBasics")) {
+    integTestImplementation(project(":platform-jvm"))
+    integTestImplementation(project(":kotlin-dsl"))
+    integTestImplementation(project(":internal-testing"))
+    integTestImplementation(testFixtures(project(":kotlin-dsl")))
+
+    integTestImplementation(libs.slf4jApi)
+    integTestImplementation(libs.mockitoKotlin)
+
+    integTestDistributionRuntimeOnly(project(":distributions-basics")) {
         because("KotlinDslPluginTest tests against TestKit")
     }
     integTestLocalRepository(project)
@@ -94,36 +73,37 @@ classycle {
 }
 
 // plugins ------------------------------------------------------------
+pluginPublish {
+    bundledGradlePlugin(
+        name = "embeddedKotlin",
+        shortDescription = "Embedded Kotlin Gradle Plugin",
+        pluginId = "org.gradle.kotlin.embedded-kotlin",
+        pluginClass = "org.gradle.kotlin.dsl.plugins.embedded.EmbeddedKotlinPlugin")
 
-bundledGradlePlugin(
-    name = "embeddedKotlin",
-    shortDescription = "Embedded Kotlin Gradle Plugin",
-    pluginId = "org.gradle.kotlin.embedded-kotlin",
-    pluginClass = "org.gradle.kotlin.dsl.plugins.embedded.EmbeddedKotlinPlugin")
+    bundledGradlePlugin(
+        name = "kotlinDsl",
+        shortDescription = "Gradle Kotlin DSL Plugin",
+        pluginId = "org.gradle.kotlin.kotlin-dsl",
+        pluginClass = "org.gradle.kotlin.dsl.plugins.dsl.KotlinDslPlugin")
 
-bundledGradlePlugin(
-    name = "kotlinDsl",
-    shortDescription = "Gradle Kotlin DSL Plugin",
-    pluginId = "org.gradle.kotlin.kotlin-dsl",
-    pluginClass = "org.gradle.kotlin.dsl.plugins.dsl.KotlinDslPlugin")
+    bundledGradlePlugin(
+        name = "kotlinDslBase",
+        shortDescription = "Gradle Kotlin DSL Base Plugin",
+        pluginId = "org.gradle.kotlin.kotlin-dsl.base",
+        pluginClass = "org.gradle.kotlin.dsl.plugins.base.KotlinDslBasePlugin")
 
-bundledGradlePlugin(
-    name = "kotlinDslBase",
-    shortDescription = "Gradle Kotlin DSL Base Plugin",
-    pluginId = "org.gradle.kotlin.kotlin-dsl.base",
-    pluginClass = "org.gradle.kotlin.dsl.plugins.base.KotlinDslBasePlugin")
+    bundledGradlePlugin(
+        name = "kotlinDslCompilerSettings",
+        shortDescription = "Gradle Kotlin DSL Compiler Settings",
+        pluginId = "org.gradle.kotlin.kotlin-dsl.compiler-settings",
+        pluginClass = "org.gradle.kotlin.dsl.plugins.dsl.KotlinDslCompilerPlugins")
 
-bundledGradlePlugin(
-    name = "kotlinDslCompilerSettings",
-    shortDescription = "Gradle Kotlin DSL Compiler Settings",
-    pluginId = "org.gradle.kotlin.kotlin-dsl.compiler-settings",
-    pluginClass = "org.gradle.kotlin.dsl.plugins.dsl.KotlinDslCompilerPlugins")
-
-bundledGradlePlugin(
-    name = "kotlinDslPrecompiledScriptPlugins",
-    shortDescription = "Gradle Kotlin DSL Precompiled Script Plugins",
-    pluginId = "org.gradle.kotlin.kotlin-dsl.precompiled-script-plugins",
-    pluginClass = "org.gradle.kotlin.dsl.plugins.precompiled.PrecompiledScriptPlugins")
+    bundledGradlePlugin(
+        name = "kotlinDslPrecompiledScriptPlugins",
+        shortDescription = "Gradle Kotlin DSL Precompiled Script Plugins",
+        pluginId = "org.gradle.kotlin.kotlin-dsl.precompiled-script-plugins",
+        pluginClass = "org.gradle.kotlin.dsl.plugins.precompiled.PrecompiledScriptPlugins")
+}
 
 // TODO:kotlin-dsl investigate
 // See https://builds.gradle.org/viewLog.html?buildId=19024848&problemId=23230

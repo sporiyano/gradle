@@ -1,34 +1,34 @@
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
     implementation(project(":resources"))
-    implementation(project(":resourcesHttp"))
+    implementation(project(":resources-http"))
     implementation(project(":core"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("jackson_core"))
-    implementation(library("jackson_annotations"))
-    implementation(library("jackson_databind"))
-    implementation(library("gcs"))
-    implementation(library("commons_httpclient"))
-    implementation(library("joda"))
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.jacksonCore)
+    implementation(libs.jacksonAnnotations)
+    implementation(libs.jacksonDatabind)
+    implementation(libs.gcs)
+    implementation(libs.commonsHttpclient)
+    implementation(libs.joda)
 
-    testImplementation(library("groovy"))
+    testImplementation(libs.groovy)
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":dependencyManagement")))
+    testImplementation(testFixtures(project(":dependency-management")))
     testImplementation(testFixtures(project(":ivy")))
     testImplementation(testFixtures(project(":maven")))
 
-    integTestImplementation(project(":coreApi"))
-    integTestImplementation(project(":modelCore"))
-    integTestImplementation(library("commons_io"))
-    integTestImplementation(testLibrary("jetty"))
+    integTestImplementation(project(":core-api"))
+    integTestImplementation(project(":model-core"))
+    integTestImplementation(libs.commonsIo)
+    integTestImplementation(libs.jetty)
 
-    integTestDistributionRuntimeOnly(project(":distributionsBasics"))
+    integTestDistributionRuntimeOnly(project(":distributions-basics"))
 }

@@ -113,7 +113,7 @@ public abstract class SwiftProjectInitDescriptor extends LanguageLibraryProjectI
         }
     }
 
-    TemplateOperation fromSwiftTemplate(String template, InitSettings settings, String sourceSetName, String sourceDir) {
+    TemplateOperation fromSwiftTemplate(String template, InitSettings settings, String sourceSetName, @SuppressWarnings("SameParameterValue") String sourceDir) {
         String targetFileName = template.substring(template.lastIndexOf("/") + 1).replace(".template", "");
         return fromSwiftTemplate(template, targetFileName, settings, sourceSetName, sourceDir);
     }
@@ -123,11 +123,11 @@ public abstract class SwiftProjectInitDescriptor extends LanguageLibraryProjectI
             throw new IllegalArgumentException("Project name cannot be empty for a Swift project");
         }
 
-        String moduleName = toModuleName(settings.getProjectName());
+        String moduleName = toModuleName(settings.getSubprojectName());
 
         return templateOperationFactory.newTemplateOperation()
             .withTemplate(template)
-            .withTarget("src/" + sourceSetName + "/" + sourceDir + "/" + targetFileName)
+            .withTarget(settings.getSubprojectName() + "/src/" + sourceSetName + "/" + sourceDir + "/" + targetFileName)
             .withBinding("projectName", settings.getProjectName())
             .withBinding("moduleName", moduleName)
             .create();

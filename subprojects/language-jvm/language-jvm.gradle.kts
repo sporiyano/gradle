@@ -1,37 +1,37 @@
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":files"))
     implementation(project(":logging"))
-    implementation(project(":processServices"))
-    implementation(project(":fileCollections"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":process-services"))
+    implementation(project(":file-collections"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
     implementation(project(":workers"))
-    implementation(project(":platformBase"))
-    implementation(project(":platformJvm"))
+    implementation(project(":platform-base"))
+    implementation(project(":platform-jvm"))
 
-    implementation(library("groovy")) // for 'Task.property(String propertyName) throws groovy.lang.MissingPropertyException'
-    implementation(library("guava"))
-    implementation(library("inject"))
+    implementation(libs.groovy) // for 'Task.property(String propertyName) throws groovy.lang.MissingPropertyException'
+    implementation(libs.guava)
+    implementation(libs.inject)
 
     testImplementation(project(":native"))
     testImplementation(project(":resources"))
     testImplementation(project(":snapshots"))
     testImplementation(testFixtures(project(":core")))
 
-    testFixturesImplementation(library("commons_lang"))
-    testFixturesImplementation(library("guava"))
-    testFixturesImplementation(project(":internalIntegTesting"))
+    testFixturesImplementation(libs.commonsLang)
+    testFixturesImplementation(libs.guava)
+    testFixturesImplementation(project(":internal-integ-testing"))
     testFixturesImplementation(testFixtures(project(":core")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("AbstractOptionsTest instantiates DefaultClassLoaderRegistry which requires a 'gradle-plugins.properties' through DefaultPluginModuleRegistry")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }

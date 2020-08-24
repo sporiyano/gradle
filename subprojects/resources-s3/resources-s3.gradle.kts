@@ -1,41 +1,41 @@
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
+import gradlebuild.cleanup.WhenNotEmpty
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
-    implementation(project(":coreApi"))
+    implementation(project(":base-services"))
+    implementation(project(":core-api"))
     implementation(project(":core"))
     implementation(project(":resources"))
-    implementation(project(":resourcesHttp"))
+    implementation(project(":resources-http"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("nativePlatform"))
-    implementation(library("awsS3_core"))
-    implementation(library("awsS3_s3"))
-    implementation(library("awsS3_kms"))
-    implementation(library("jaxb"))
-    implementation(library("jackson_core"))
-    implementation(library("jackson_annotations"))
-    implementation(library("jackson_databind"))
-    implementation(library("commons_httpclient"))
-    implementation(library("joda"))
-    implementation(library("commons_lang"))
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.nativePlatform)
+    implementation(libs.awsS3Core)
+    implementation(libs.awsS3S3)
+    implementation(libs.awsS3Kms)
+    implementation(libs.jaxb)
+    implementation(libs.jacksonCore)
+    implementation(libs.jacksonAnnotations)
+    implementation(libs.jacksonDatabind)
+    implementation(libs.commonsHttpclient)
+    implementation(libs.joda)
+    implementation(libs.commonsLang)
 
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":dependencyManagement")))
+    testImplementation(testFixtures(project(":dependency-management")))
     testImplementation(testFixtures(project(":ivy")))
     testImplementation(testFixtures(project(":maven")))
 
     integTestImplementation(project(":logging"))
-    integTestImplementation(library("commons_io"))
-    integTestImplementation(testLibrary("littleproxy"))
-    integTestImplementation(testLibrary("jetty"))
+    integTestImplementation(libs.commonsIo)
+    integTestImplementation(libs.littleproxy)
+    integTestImplementation(libs.jetty)
 
-    integTestDistributionRuntimeOnly(project(":distributionsBasics"))
+    integTestDistributionRuntimeOnly(project(":distributions-basics"))
 }
 
 testFilesCleanup {

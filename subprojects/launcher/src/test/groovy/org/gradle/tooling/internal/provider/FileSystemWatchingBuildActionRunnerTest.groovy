@@ -21,21 +21,24 @@ import org.gradle.api.internal.StartParameterInternal
 import org.gradle.internal.invocation.BuildAction
 import org.gradle.internal.invocation.BuildActionRunner
 import org.gradle.internal.invocation.BuildController
+import org.gradle.internal.operations.BuildOperationRunner
 import org.gradle.internal.service.ServiceRegistry
-import org.gradle.internal.watch.vfs.WatchingAwareVirtualFileSystem
+import org.gradle.internal.watch.vfs.BuildLifecycleAwareVirtualFileSystem
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 class FileSystemWatchingBuildActionRunnerTest extends Specification {
 
-    def virtualFileSystem = Mock(WatchingAwareVirtualFileSystem)
+    def watchingHandler = Mock(BuildLifecycleAwareVirtualFileSystem)
     def startParameter = Mock(StartParameterInternal)
+    def buildOperationRunner = Mock(BuildOperationRunner)
     def buildController = Stub(BuildController) {
         getGradle() >> Stub(GradleInternal) {
             getStartParameter() >> startParameter
             getServices() >> Stub(ServiceRegistry) {
-                get(WatchingAwareVirtualFileSystem) >> virtualFileSystem
+                get(BuildLifecycleAwareVirtualFileSystem) >> watchingHandler
+                get(BuildOperationRunner) >> buildOperationRunner
             }
         }
     }
@@ -51,13 +54,13 @@ class FileSystemWatchingBuildActionRunnerTest extends Specification {
         when:
         runner.run(buildAction, buildController)
         then:
-        1 * virtualFileSystem.afterBuildStarted(watchFsEnabled)
+        1 * watchingHandler.afterBuildStarted(watchFsEnabled, buildOperationRunner)
 
         then:
         1 * delegate.run(buildAction, buildController)
 
         then:
-        1 * virtualFileSystem.beforeBuildFinished(watchFsEnabled)
+        1 * watchingHandler.beforeBuildFinished(watchFsEnabled, buildOperationRunner, _)
 
         where:
         watchFsEnabled << [true, false]

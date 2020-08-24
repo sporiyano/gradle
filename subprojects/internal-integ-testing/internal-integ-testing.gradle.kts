@@ -13,100 +13,104 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.gradle.build.ReproduciblePropertiesWriter
+import gradlebuild.basics.util.ReproduciblePropertiesWriter
 import java.util.Properties
 
 plugins {
-    gradlebuild.internal.java
+    id("gradlebuild.internal.java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":messaging"))
     implementation(project(":native"))
     implementation(project(":logging"))
     implementation(project(":cli"))
-    implementation(project(":processServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
-    implementation(project(":baseServicesGroovy"))
+    implementation(project(":process-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
+    implementation(project(":base-services-groovy"))
     implementation(project(":files"))
-    implementation(project(":fileCollections"))
+    implementation(project(":file-collections"))
     implementation(project(":resources"))
-    implementation(project(":buildCache"))
-    implementation(project(":persistentCache"))
-    implementation(project(":dependencyManagement"))
-    implementation(project(":instantExecution"))
-    implementation(project(":jvmServices"))
+    implementation(project(":build-cache"))
+    implementation(project(":persistent-cache"))
+    implementation(project(":dependency-management"))
+    implementation(project(":configuration-cache"))
+    implementation(project(":jvm-services"))
     implementation(project(":launcher"))
-    implementation(project(":internalTesting"))
-    implementation(project(":buildEvents"))
-    implementation(project(":buildOption"))
+    implementation(project(":internal-testing"))
+    implementation(project(":build-events"))
+    implementation(project(":build-option"))
 
-    implementation(library("groovy"))
-    implementation(library("junit"))
-    implementation(testLibrary("spock"))
-    implementation(library("nativePlatform"))
-    implementation(library("commons_lang"))
-    implementation(library("commons_io"))
-    implementation(testLibrary("jetty"))
-    implementation(testLibrary("littleproxy"))
-    implementation(library("gcs"))
-    implementation(library("inject"))
-    implementation(library("commons_httpclient"))
-    implementation(library("joda"))
-    implementation(library("jackson_core"))
-    implementation(library("jackson_annotations"))
-    implementation(library("jackson_databind"))
-    implementation(library("ivy"))
-    implementation(library("ant"))
-    implementation(library("jgit")) {
+    implementation(libs.groovy)
+    implementation(libs.junit)
+    implementation(libs.spock)
+    implementation(libs.nativePlatform)
+    implementation(libs.commonsLang)
+    implementation(libs.commonsIo)
+    implementation(libs.jetty)
+    implementation(libs.littleproxy)
+    implementation(libs.gcs)
+    implementation(libs.inject)
+    implementation(libs.commonsHttpclient)
+    implementation(libs.joda)
+    implementation(libs.jacksonCore)
+    implementation(libs.jacksonAnnotations)
+    implementation(libs.jacksonDatabind)
+    implementation(libs.ivy)
+    implementation(libs.ant)
+    implementation(libs.jgit) {
         because("Some tests require a git reportitory - see AbstractIntegrationSpec.initGitDir(")
     }
-    testLibraries("sshd").forEach {
-        // we depend on both the platform and the library
-        implementation(it)
-        implementation(platform(it))
-    }
-    implementation(library("gson"))
-    implementation(library("joda"))
-    implementation(library("jsch"))
-    implementation(library("jcifs"))
-    implementation(library("jansi"))
-    implementation(library("ansi_control_sequence_util"))
-    implementation("org.apache.mina:mina-core")
-    implementation(testLibrary("sampleCheck")) {
+
+    // we depend on both: sshd platforms and libraries
+    implementation(libs.sshdCore)
+    implementation(platform(libs.sshdCore))
+    implementation(libs.sshdScp)
+    implementation(platform(libs.sshdScp))
+    implementation(libs.sshdSftp)
+    implementation(platform(libs.sshdSftp))
+
+    implementation(libs.gson)
+    implementation(libs.joda)
+    implementation(libs.jsch)
+    implementation(libs.jcifs)
+    implementation(libs.jansi)
+    implementation(libs.ansiControlSequenceUtil)
+    implementation(libs.mina)
+    implementation(libs.sampleCheck) {
         exclude(module = "groovy-all")
         exclude(module = "slf4j-simple")
     }
     implementation(testFixtures(project(":core")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("Tests instantiate DefaultClassLoaderRegistry which requires a 'gradle-plugins.properties' through DefaultPluginModuleRegistry")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 classycle {
     excludePatterns.set(listOf("org/gradle/**"))
 }
 
-val generatedResourcesDir = gradlebuildJava.generatedResourcesDir
-
 val prepareVersionsInfo = tasks.register<PrepareVersionsInfo>("prepareVersionsInfo") {
-    destFile.set(generatedResourcesDir.file("all-released-versions.properties"))
-    versions = releasedVersions.allPreviousVersions
-    mostRecent = releasedVersions.mostRecentRelease
-    mostRecentSnapshot = releasedVersions.mostRecentSnapshot
+    destFile.set(layout.buildDirectory.file("generated-resources/all-released-versions/all-released-versions.properties"))
+    versions.set(moduleIdentity.releasedVersions.map {
+        it.allPreviousVersions.joinToString(" ") { it.version }
+    })
+    mostRecent.set(moduleIdentity.releasedVersions.map { it.mostRecentRelease.version })
+    mostRecentSnapshot.set(moduleIdentity.releasedVersions.map { it.mostRecentSnapshot.version })
 }
 
 val copyAgpVersionsInfo by tasks.registering(Copy::class) {
     from(rootProject.layout.projectDirectory.file("gradle/dependency-management/agp-versions.properties"))
-    into(temporaryDir)
+    into(layout.buildDirectory.dir("generated-resources/agp-versions"))
 }
 
 sourceSets.main {
-    output.dir(mapOf("builtBy" to prepareVersionsInfo), generatedResourcesDir)
+    output.dir(prepareVersionsInfo.map { it.destFile.get().asFile.parentFile })
     output.dir(copyAgpVersionsInfo)
 }
 
@@ -116,21 +120,21 @@ abstract class PrepareVersionsInfo : DefaultTask() {
     @get:OutputFile
     abstract val destFile: RegularFileProperty
 
-    @Input
-    lateinit var mostRecent: String
+    @get:Input
+    abstract val mostRecent: Property<String>
 
-    @Input
-    lateinit var versions: List<String>
+    @get:Input
+    abstract val versions: Property<String>
 
-    @Input
-    lateinit var mostRecentSnapshot: String
+    @get:Input
+    abstract val mostRecentSnapshot: Property<String>
 
     @TaskAction
     fun prepareVersions() {
         val properties = Properties()
-        properties["mostRecent"] = mostRecent
-        properties["mostRecentSnapshot"] = mostRecentSnapshot
-        properties["versions"] = versions.joinToString(" ")
+        properties["mostRecent"] = mostRecent.get()
+        properties["mostRecentSnapshot"] = mostRecentSnapshot.get()
+        properties["versions"] = versions.get()
         ReproduciblePropertiesWriter.store(properties, destFile.get().asFile)
     }
 }

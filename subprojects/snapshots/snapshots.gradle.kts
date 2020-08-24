@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import accessors.java
-
 plugins {
-    gradlebuild.distribution.`implementation-java`
-    gradlebuild.`publish-public-libraries`
+    id("gradlebuild.distribution.implementation-java")
+    id("gradlebuild.publish-public-libraries")
 }
 
 description = "Tools to take immutable, comparable snapshots of files and other things"
@@ -27,34 +25,33 @@ dependencies {
     api(project(":files"))
     api(project(":hashing"))
 
-    implementation(project(":baseAnnotations"))
+    implementation(project(":base-annotations"))
 
-    implementation(library("guava")) { version { require(libraryVersion("guava")) } }
-    implementation(library("slf4j_api")) { version { require(libraryVersion("slf4j_api")) } }
+    implementation(libs.guava)
+    implementation(libs.slf4jApi)
 
-    testImplementation(project(":processServices"))
+    testImplementation(project(":process-services"))
     testImplementation(project(":resources"))
     testImplementation(project(":native"))
-    testImplementation(project(":persistentCache"))
-    testImplementation(library("ant"))
+    testImplementation(project(":persistent-cache"))
+    testImplementation(libs.ant)
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":coreApi")))
-    testImplementation(testFixtures(project(":baseServices")))
-    testImplementation(testFixtures(project(":fileCollections")))
+    testImplementation(testFixtures(project(":core-api")))
+    testImplementation(testFixtures(project(":base-services")))
+    testImplementation(testFixtures(project(":file-collections")))
     testImplementation(testFixtures(project(":messaging")))
 
-    testFixturesImplementation(project(":baseServices"))
-    testFixturesImplementation(project(":coreApi"))
-    testFixturesImplementation(project(":fileCollections"))
+    testFixturesImplementation(project(":base-services"))
+    testFixturesImplementation(project(":core-api"))
+    testFixturesImplementation(project(":file-collections"))
 
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 afterEvaluate {
     // This is a workaround for the validate plugins task trying to inspect classes which have changed but are NOT tasks.
     // For the current project, we exclude all internal packages, since there are no tasks in there.
     tasks.withType<ValidatePlugins>().configureEach {
-        val main by project.java.sourceSets
-        classes.setFrom(main.output.classesDirs.asFileTree.matching { exclude("**/internal/**") })
+        classes.setFrom(sourceSets.main.get().output.classesDirs.asFileTree.matching { exclude("**/internal/**") })
     }
 }

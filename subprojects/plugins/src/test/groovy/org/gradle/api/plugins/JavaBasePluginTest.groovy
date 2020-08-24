@@ -21,6 +21,7 @@ import org.gradle.api.attributes.CompatibilityCheckDetails
 import org.gradle.api.attributes.MultipleCandidatesDetails
 import org.gradle.api.attributes.Usage
 import org.gradle.api.internal.artifacts.JavaEcosystemSupport
+import org.gradle.api.internal.project.DefaultProject
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSet
@@ -30,6 +31,8 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.api.tasks.testing.Test
+import org.gradle.initialization.GradlePropertiesController
+import org.gradle.internal.jvm.Jvm
 import org.gradle.jvm.ClassDirectoryBinarySpec
 import org.gradle.jvm.toolchain.JavaInstallationRegistry
 import org.gradle.language.base.ProjectSourceSet
@@ -60,6 +63,7 @@ class JavaBasePluginTest extends AbstractProjectBuilderSpec {
         then:
         project.plugins.hasPlugin(ReportingBasePlugin)
         project.plugins.hasPlugin(BasePlugin)
+        project.plugins.hasPlugin(JvmEcosystemPlugin)
         project.convention.plugins.java instanceof JavaPluginConvention
         project.extensions.sourceSets.is(project.convention.plugins.java.sourceSets)
         project.extensions.java instanceof JavaPluginExtension
@@ -200,6 +204,53 @@ class JavaBasePluginTest extends AbstractProjectBuilderSpec {
         then:
         def customClasses = project.tasks['customClasses']
         TaskDependencyMatchers.dependsOn('someTask', 'processCustomResources', 'compileCustomJava').matches(customClasses)
+    }
+
+    void "wires toolchain for sourceset if toolchain is configured"() {
+        given:
+        def someJdk = Jvm.current()
+        setupProjectWithToolchain(someJdk)
+
+        when:
+        project.sourceSets.create('custom')
+
+        then:
+        def compileTask = project.tasks.named("compileCustomJava", JavaCompile).get()
+        def configuredToolchain = compileTask.javaCompiler.get().javaToolchain
+        configuredToolchain.displayName.contains(someJdk.javaVersion.getMajorVersion())
+    }
+
+    void "wires toolchain for test if toolchain is configured"() {
+        given:
+        def someJdk = Jvm.current()
+        setupProjectWithToolchain(someJdk)
+
+        when:
+        def testTask = project.tasks.named("test", Test).get()
+        def configuredJavaLauncher = testTask.javaLauncher.get()
+
+        then:
+        configuredJavaLauncher.javaExecutable.contains(someJdk.javaVersion.getMajorVersion())
+    }
+
+    void "wires toolchain for javadoc if toolchain is configured"() {
+        given:
+        def someJdk = Jvm.current()
+        setupProjectWithToolchain(someJdk)
+
+        when:
+        def javadocTask = project.tasks.named("javadoc", Javadoc).get()
+        def configuredJavadocTool = javadocTask.javadocTool
+
+        then:
+        configuredJavadocTool.isPresent()
+    }
+
+    private void setupProjectWithToolchain(Jvm someJdk) {
+        project.pluginManager.apply(JavaPlugin)
+        project.java.toolchain.languageVersion = someJdk.javaVersion
+        // workaround for https://github.com/gradle/gradle/issues/13122
+        ((DefaultProject) project).getServices().get(GradlePropertiesController.class).loadGradlePropertiesFrom(project.projectDir)
     }
 
     void tasksReflectChangesToSourceSetConfiguration() {

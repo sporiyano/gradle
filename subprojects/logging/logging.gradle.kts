@@ -1,5 +1,5 @@
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 description = "Logging infrastructure"
@@ -7,32 +7,32 @@ description = "Logging infrastructure"
 gradlebuildJava.usedInWorkers()
 
 dependencies {
-    api(library("slf4j_api"))
+    api(libs.slf4jApi)
 
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":messaging"))
     implementation(project(":cli"))
-    implementation(project(":buildOption"))
+    implementation(project(":build-option"))
 
     implementation(project(":native"))
-    implementation(library("jul_to_slf4j"))
-    implementation(library("ant"))
-    implementation(library("commons_lang"))
-    implementation(library("guava"))
-    implementation(library("jansi"))
+    implementation(libs.julToSlf4j)
+    implementation(libs.ant)
+    implementation(libs.commonsLang)
+    implementation(libs.guava)
+    implementation(libs.jansi)
 
-    runtimeOnly(library("log4j_to_slf4j"))
-    runtimeOnly(library("jcl_to_slf4j"))
+    runtimeOnly(libs.log4jToSlf4j)
+    runtimeOnly(libs.jclToSlf4j)
 
     testImplementation(testFixtures(project(":core")))
 
-    integTestImplementation(library("ansi_control_sequence_util"))
+    integTestImplementation(libs.ansiControlSequenceUtil)
 
-    testFixturesImplementation(project(":baseServices"))
+    testFixturesImplementation(project(":base-services"))
     testFixturesImplementation(testFixtures(project(":core")))
-    testFixturesImplementation(library("slf4j_api"))
+    testFixturesImplementation(libs.slf4jApi)
 
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 classycle {

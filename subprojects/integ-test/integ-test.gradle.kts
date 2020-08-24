@@ -1,51 +1,51 @@
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
+import gradlebuild.cleanup.WhenNotEmpty
 
 plugins {
-    gradlebuild.internal.java
+    id("gradlebuild.internal.java")
 }
 
 dependencies {
-    integTestImplementation(project(":baseServices"))
+    integTestImplementation(project(":base-services"))
     integTestImplementation(project(":native"))
     integTestImplementation(project(":logging"))
-    integTestImplementation(project(":processServices"))
-    integTestImplementation(project(":coreApi"))
+    integTestImplementation(project(":process-services"))
+    integTestImplementation(project(":core-api"))
     integTestImplementation(project(":resources"))
-    integTestImplementation(project(":persistentCache"))
-    integTestImplementation(project(":dependencyManagement"))
+    integTestImplementation(project(":persistent-cache"))
+    integTestImplementation(project(":dependency-management"))
     integTestImplementation(project(":bootstrap"))
     integTestImplementation(project(":launcher"))
-    integTestImplementation(library("groovy"))
-    integTestImplementation(library("slf4j_api"))
-    integTestImplementation(library("guava"))
-    integTestImplementation(library("ant"))
-    integTestImplementation(testLibrary("jsoup"))
-    integTestImplementation(testLibrary("jetty"))
-    integTestImplementation(testLibrary("sampleCheck")) {
+    integTestImplementation(libs.groovy)
+    integTestImplementation(libs.slf4jApi)
+    integTestImplementation(libs.guava)
+    integTestImplementation(libs.ant)
+    integTestImplementation(libs.jsoup)
+    integTestImplementation(libs.jetty)
+    integTestImplementation(libs.sampleCheck) {
         exclude(group = "org.codehaus.groovy", module = "groovy-all")
         exclude(module = "slf4j-simple")
     }
 
-    crossVersionTestImplementation(project(":baseServices"))
+    crossVersionTestImplementation(project(":base-services"))
     crossVersionTestImplementation(project(":core"))
     crossVersionTestImplementation(project(":plugins"))
-    crossVersionTestImplementation(project(":platformJvm"))
-    crossVersionTestImplementation(project(":languageJava"))
-    crossVersionTestImplementation(project(":languageGroovy"))
+    crossVersionTestImplementation(project(":platform-jvm"))
+    crossVersionTestImplementation(project(":language-java"))
+    crossVersionTestImplementation(project(":language-groovy"))
     crossVersionTestImplementation(project(":scala"))
     crossVersionTestImplementation(project(":ear"))
-    crossVersionTestImplementation(project(":testingJvm"))
+    crossVersionTestImplementation(project(":testing-jvm"))
     crossVersionTestImplementation(project(":ide"))
-    crossVersionTestImplementation(project(":codeQuality"))
+    crossVersionTestImplementation(project(":code-quality"))
     crossVersionTestImplementation(project(":signing"))
 
     integTestImplementation(testFixtures(project(":core")))
     integTestImplementation(testFixtures(project(":diagnostics")))
-    integTestImplementation(testFixtures(project(":platformNative")))
-    integTestImplementation(library("jgit"))
+    integTestImplementation(testFixtures(project(":platform-native")))
+    integTestImplementation(libs.jgit)
 
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
-    crossVersionTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
+    crossVersionTestDistributionRuntimeOnly(project(":distributions-full"))
 }
 
 testFilesCleanup {

@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
-    implementation(project(":baseServicesGroovy"))
-    implementation(project(":coreApi"))
+    implementation(project(":base-services"))
+    implementation(project(":base-services-groovy"))
+    implementation(project(":core-api"))
     implementation(project(":files"))
-    implementation(project(":modelCore"))
+    implementation(project(":model-core"))
     implementation(project(":logging"))
     implementation(project(":native"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("groovy"))
-    implementation(library("guava"))
-    implementation(library("commons_io"))
-    implementation(library("commons_lang"))
-    implementation(library("inject"))
+    implementation(libs.slf4jApi)
+    implementation(libs.groovy)
+    implementation(libs.guava)
+    implementation(libs.commonsIo)
+    implementation(libs.commonsLang)
+    implementation(libs.inject)
 
-    testImplementation(project(":processServices"))
+    testImplementation(project(":process-services"))
     testImplementation(project(":resources"))
     testImplementation(project(":snapshots"))
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":coreApi")))
-    testImplementation(testFixtures(project(":modelCore")))
+    testImplementation(testFixtures(project(":core-api")))
+    testImplementation(testFixtures(project(":model-core")))
 
-    testFixturesImplementation(project(":baseServices"))
-    testFixturesImplementation(project(":coreApi"))
+    testFixturesImplementation(project(":base-services"))
+    testFixturesImplementation(project(":core-api"))
     testFixturesImplementation(project(":native"))
 
-    testFixturesImplementation(library("guava"))
+    testFixturesImplementation(libs.guava)
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("Tests instantiate DefaultClassLoaderRegistry which requires a 'gradle-plugins.properties' through DefaultPluginModuleRegistry")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 strictCompile {

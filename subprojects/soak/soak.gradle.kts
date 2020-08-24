@@ -15,23 +15,29 @@
  */
 
 plugins {
-    gradlebuild.internal.kotlin
+    id("gradlebuild.internal.kotlin")
 }
 
 dependencies {
-    testFixturesImplementation(project(":baseServices"))
+    testFixturesImplementation(project(":base-services"))
     testFixturesImplementation(project(":core"))
-    testFixturesImplementation(project(":internalIntegTesting"))
+    testFixturesImplementation(project(":internal-integ-testing"))
 
-    testImplementation(project(":kotlinDslTestFixtures"))
+    testImplementation(testFixtures(project(":kotlin-dsl")))
     testImplementation(testFixtures(project(":core")))
 
     integTestImplementation(project(":logging"))
-    integTestImplementation(project(":persistentCache"))
+    integTestImplementation(project(":persistent-cache"))
     integTestImplementation(project(":launcher"))
-    integTestImplementation(project(":fileWatching"))
-    integTestImplementation(library("slf4j_api"))
-    integTestImplementation(testLibrary("jetty"))
+    integTestImplementation(project(":file-watching"))
+    integTestImplementation(libs.slf4jApi)
+    integTestImplementation(libs.jetty)
 
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
+}
+
+tasks.register("soakTest") {
+    description = "Run all soak tests defined in the :soak subproject"
+    group = "CI Lifecycle"
+    dependsOn(":soak:embeddedIntegTest")
 }

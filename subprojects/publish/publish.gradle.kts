@@ -13,35 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":fileCollections"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":file-collections"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":baseServicesGroovy")) // for 'Specs'
-    implementation(project(":dependencyManagement"))
+    implementation(project(":base-services-groovy")) // for 'Specs'
+    implementation(project(":dependency-management"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("groovy"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("gson"))
-    implementation(library("inject"))
+    implementation(libs.slf4jApi)
+    implementation(libs.groovy)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.gson)
+    implementation(libs.inject)
 
     testImplementation(testFixtures(project(":core")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("Tests instantiate DefaultClassLoaderRegistry which requires a 'gradle-plugins.properties' through DefaultPluginModuleRegistry")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }
 
 integrationTestUsesSampleDir("subprojects/publish/src/main")

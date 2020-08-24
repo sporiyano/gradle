@@ -1,21 +1,21 @@
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 gradlebuildJava.usedInWorkers()
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
 
-    implementation(library("fastutil"))
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("kryo"))
+    implementation(libs.fastutil)
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.kryo)
 
     testImplementation(testFixtures(project(":core")))
 
-    testFixturesImplementation(project(":baseServices"))
-    testFixturesImplementation(library("slf4j_api"))
+    testFixturesImplementation(project(":base-services"))
+    testFixturesImplementation(libs.slf4jApi)
 
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }

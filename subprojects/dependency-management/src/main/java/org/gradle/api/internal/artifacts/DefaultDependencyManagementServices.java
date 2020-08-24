@@ -21,6 +21,7 @@ import org.gradle.StartParameter;
 import org.gradle.api.Describable;
 import org.gradle.api.artifacts.ConfigurablePublishArtifact;
 import org.gradle.api.artifacts.component.ComponentArtifactIdentifier;
+import org.gradle.api.artifacts.component.ComponentSelector;
 import org.gradle.api.artifacts.dsl.ArtifactHandler;
 import org.gradle.api.artifacts.dsl.ComponentMetadataHandler;
 import org.gradle.api.artifacts.dsl.ComponentModuleMetadataHandler;
@@ -66,6 +67,7 @@ import org.gradle.api.internal.artifacts.ivyservice.moduleconverter.LocalCompone
 import org.gradle.api.internal.artifacts.ivyservice.moduleconverter.dependencies.LocalConfigurationMetadataBuilder;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.ResolvedArtifactSet;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.AttributeContainerSerializer;
+import org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.ComponentSelectionDescriptorFactory;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.store.ResolutionResultsStoreFactory;
 import org.gradle.api.internal.artifacts.mvnsettings.LocalMavenRepositoryLocator;
 import org.gradle.api.internal.artifacts.query.ArtifactResolutionQueryFactory;
@@ -81,6 +83,7 @@ import org.gradle.api.internal.artifacts.transform.ArtifactTransformParameterSch
 import org.gradle.api.internal.artifacts.transform.ConsumerProvidedVariantFinder;
 import org.gradle.api.internal.artifacts.transform.DefaultArtifactTransforms;
 import org.gradle.api.internal.artifacts.transform.DefaultTransformationRegistrationFactory;
+import org.gradle.api.internal.artifacts.transform.DefaultTransformedVariantFactory;
 import org.gradle.api.internal.artifacts.transform.DefaultTransformerInvocationFactory;
 import org.gradle.api.internal.artifacts.transform.DefaultVariantTransformRegistry;
 import org.gradle.api.internal.artifacts.transform.ExecutionGraphDependenciesResolver;
@@ -91,6 +94,7 @@ import org.gradle.api.internal.artifacts.transform.Transformation;
 import org.gradle.api.internal.artifacts.transform.TransformationNode;
 import org.gradle.api.internal.artifacts.transform.TransformationNodeRegistry;
 import org.gradle.api.internal.artifacts.transform.TransformationRegistrationFactory;
+import org.gradle.api.internal.artifacts.transform.TransformedVariantFactory;
 import org.gradle.api.internal.artifacts.transform.TransformerInvocationFactory;
 import org.gradle.api.internal.artifacts.type.ArtifactTypeRegistry;
 import org.gradle.api.internal.artifacts.type.DefaultArtifactTypeRegistry;
@@ -180,7 +184,7 @@ import org.gradle.internal.service.ServiceRegistration;
 import org.gradle.internal.service.ServiceRegistry;
 import org.gradle.internal.snapshot.ValueSnapshotter;
 import org.gradle.internal.typeconversion.NotationParser;
-import org.gradle.internal.vfs.VirtualFileSystem;
+import org.gradle.internal.vfs.FileSystemAccess;
 import org.gradle.util.internal.SimpleMapInterner;
 import org.gradle.vcs.internal.VcsMappingsStore;
 
@@ -360,6 +364,10 @@ public class DefaultDependencyManagementServices implements DependencyManagement
             this.domainObjectContext = domainObjectContext;
         }
 
+        void configure(ServiceRegistration registration) {
+            registration.add(DefaultTransformedVariantFactory.class);
+        }
+
         AttributesSchemaInternal createConfigurationAttributesSchema(InstantiatorFactory instantiatorFactory, IsolatableFactory isolatableFactory, PlatformSupport platformSupport) {
             DefaultAttributesSchema attributesSchema = instantiatorFactory.decorateLenient().newInstance(DefaultAttributesSchema.class, new ComponentAttributeMatcher(), instantiatorFactory, isolatableFactory);
             platformSupport.configureSchema(attributesSchema);
@@ -376,7 +384,7 @@ public class DefaultDependencyManagementServices implements DependencyManagement
 
         TransformerInvocationFactory createTransformerInvocationFactory(
                 WorkExecutor<ExecutionRequestContext, CachingResult> workExecutor,
-                VirtualFileSystem virtualFileSystem,
+                FileSystemAccess fileSystemAccess,
                 ImmutableCachingTransformationWorkspaceProvider transformationWorkspaceProvider,
                 ArtifactTransformListener artifactTransformListener,
                 FileCollectionFactory fileCollectionFactory,
@@ -385,14 +393,14 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                 BuildOperationExecutor buildOperationExecutor
         ) {
             return new DefaultTransformerInvocationFactory(
-                    workExecutor,
-                    virtualFileSystem,
-                    artifactTransformListener,
-                    transformationWorkspaceProvider,
-                    fileCollectionFactory,
-                    fileCollectionSnapshotter,
-                    projectStateRegistry,
-                    buildOperationExecutor
+                workExecutor,
+                fileSystemAccess,
+                artifactTransformListener,
+                transformationWorkspaceProvider,
+                fileCollectionFactory,
+                fileCollectionSnapshotter,
+                projectStateRegistry,
+                buildOperationExecutor
             );
         }
 
@@ -402,7 +410,6 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                 ClassLoaderHierarchyHasher classLoaderHierarchyHasher,
                 TransformerInvocationFactory transformerInvocationFactory,
                 ValueSnapshotter valueSnapshotter,
-                ProjectStateRegistry projectStateRegistry,
                 DomainObjectContext domainObjectContext,
                 ArtifactTransformParameterScheme parameterScheme,
                 ArtifactTransformActionScheme actionScheme,
@@ -421,7 +428,6 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                     fileLookup,
                     fileCollectionFingerprinterRegistry,
                     domainObjectContext,
-                    projectStateRegistry,
                     parameterScheme,
                     actionScheme,
                     internalServices
@@ -503,6 +509,7 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                                                                     CollectionCallbackActionDecorator callbackDecorator,
                                                                     UserCodeApplicationContext userCodeApplicationContext,
                                                                     DomainObjectCollectionFactory domainObjectCollectionFactory,
+                                                                    NotationParser<Object, ComponentSelector> moduleSelectorNotationParser,
                                                                     ObjectFactory objectFactory) {
             return instantiator.newInstance(DefaultConfigurationContainer.class,
                     configurationResolver,
@@ -527,6 +534,7 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                     callbackDecorator,
                     userCodeApplicationContext,
                     domainObjectCollectionFactory,
+                    moduleSelectorNotationParser,
                     objectFactory
             );
         }
@@ -620,8 +628,9 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                                                        ComponentSelectorConverter componentSelectorConverter,
                                                        AttributeContainerSerializer attributeContainerSerializer,
                                                        BuildState currentBuild,
-                                                       TransformationNodeRegistry transformationNodeRegistry,
-                                                       DependencyVerificationOverride dependencyVerificationOverride) {
+                                                       TransformedVariantFactory transformedVariantFactory,
+                                                       DependencyVerificationOverride dependencyVerificationOverride,
+                                                       ComponentSelectionDescriptorFactory componentSelectionDescriptorFactory) {
             return new ErrorHandlingConfigurationResolver(
                     new ShortCircuitEmptyConfigurationResolver(
                             new DefaultConfigurationResolver(
@@ -638,7 +647,7 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                                                     attributesFactory),
                                             attributesSchema,
                                             attributesFactory,
-                                            transformationNodeRegistry
+                                            transformedVariantFactory
                                     ),
                                     moduleIdentifierFactory,
                                     buildOperationExecutor,
@@ -647,7 +656,8 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                                     attributeContainerSerializer,
                                     currentBuild.getBuildIdentifier(),
                                     new AttributeDesugaring(attributesFactory),
-                                    dependencyVerificationOverride),
+                                    dependencyVerificationOverride,
+                                componentSelectionDescriptorFactory),
                             componentIdentifierFactory,
                             moduleIdentifierFactory,
                             currentBuild.getBuildIdentifier()));

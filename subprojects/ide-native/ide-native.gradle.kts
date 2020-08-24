@@ -13,51 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
+
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":fileCollections"))
-    implementation(project(":dependencyManagement"))
+    implementation(project(":file-collections"))
+    implementation(project(":dependency-management"))
     implementation(project(":ide"))
-    implementation(project(":platformBase"))
-    implementation(project(":platformNative"))
-    implementation(project(":languageNative"))
-    implementation(project(":testingBase"))
-    implementation(project(":testingNative"))
+    implementation(project(":platform-base"))
+    implementation(project(":platform-native"))
+    implementation(project(":language-native"))
+    implementation(project(":testing-base"))
+    implementation(project(":testing-native"))
 
-    implementation(library("groovy"))
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("inject"))
-    implementation(library("plist"))
+    implementation(libs.groovy)
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.inject)
+    implementation(libs.plist)
 
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":platformNative")))
-    testImplementation(testFixtures(project(":languageNative")))
-    testImplementation(testFixtures(project(":versionControl")))
+    testImplementation(testFixtures(project(":platform-native")))
+    testImplementation(testFixtures(project(":language-native")))
+    testImplementation(testFixtures(project(":version-control")))
 
     integTestImplementation(project(":native"))
-    integTestImplementation(library("commons_io"))
-    integTestImplementation(library("jgit"))
+    integTestImplementation(libs.commonsIo)
+    integTestImplementation(libs.jgit)
 
     testFixturesApi(testFixtures(project(":ide")))
-    testFixturesImplementation(library("plist"))
-    testFixturesImplementation(library("guava"))
+    testFixturesImplementation(libs.plist)
+    testFixturesImplementation(libs.guava)
     testFixturesImplementation(testFixtures(project(":ide")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("Tests instantiate DefaultClassLoaderRegistry which requires a 'gradle-plugins.properties' through DefaultPluginModuleRegistry")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsNative"))
+    integTestDistributionRuntimeOnly(project(":distributions-native"))
 }
 
 integrationTestUsesSampleDir("subprojects/ide-native/src/main")

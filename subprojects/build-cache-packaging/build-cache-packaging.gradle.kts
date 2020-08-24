@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
-    gradlebuild.`publish-public-libraries`
+    id("gradlebuild.distribution.api-java")
+    id("gradlebuild.publish-public-libraries")
 }
 
 description = "Package build cache results"
 
 dependencies {
-    api(project(":buildCacheBase"))
+    api(project(":build-cache-base"))
     api(project(":snapshots"))
     api(project(":hashing"))
     api(project(":files"))
 
-    implementation(project(":baseAnnotations"))
+    implementation(project(":base-annotations"))
 
-    implementation(library("guava")) { version { require(libraryVersion("guava")) } }
-    implementation(library("commons_compress")) { version { require(libraryVersion("commons_compress")) } }
-    implementation(library("commons_io")) { version { require(libraryVersion("commons_io")) } }
+    implementation(libs.guava)
+    implementation(libs.commonsCompress)
+    implementation(libs.commonsIo)
 
-    testImplementation(project(":processServices"))
-    testImplementation(project(":fileCollections"))
+    testImplementation(project(":process-services"))
+    testImplementation(project(":file-collections"))
     testImplementation(project(":resources"))
 
-    testImplementation(testFixtures(project(":baseServices")))
+    testImplementation(testFixtures(project(":base-services")))
     testImplementation(testFixtures(project(":core")))
     testImplementation(testFixtures(project(":snapshots")))
-    testImplementation(testFixtures(project(":coreApi")))
+    testImplementation(testFixtures(project(":core-api")))
 }

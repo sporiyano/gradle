@@ -1,11 +1,13 @@
 dependencies {
-    implementation(project(":binaryCompatibility"))
+    implementation(project(":basics"))
+    implementation(project(":binary-compatibility"))
     implementation(project(":buildquality"))
     implementation(project(":cleanup"))
-    implementation(project(":configuration"))
-    implementation(project(":kotlinDsl"))
-    implementation(project(":plugins"))
-    implementation(project(":packaging"))
+    implementation(project(":dependency-modules"))
+    implementation(project(":jvm"))
     implementation(project(":profiling"))
-    implementation("org.gradle.kotlin:gradle-kotlin-dsl-conventions:0.5.0")
+    implementation(project(":publishing"))
+
+    implementation("org.gradle.kotlin:gradle-kotlin-dsl-conventions")
+    implementation(kotlin("gradle-plugin"))
 }

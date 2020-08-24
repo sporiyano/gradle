@@ -1,42 +1,28 @@
-import org.gradle.plugins.install.Install
-import org.gradle.gradlebuild.packaging.RunEmbeddedGradle
-import org.gradle.gradlebuild.packaging.GradleDistributionSpecs.binDistributionSpec
-import org.gradle.gradlebuild.packaging.GradleDistributionSpecs.allDistributionSpec
+import gradlebuild.run.tasks.RunEmbeddedGradle
 
 plugins {
-    gradlebuild.distribution.packaging
-    gradlebuild.`add-verify-production-environment-task`
-    gradlebuild.install
+    id("gradlebuild.distribution.packaging")
+    id("gradlebuild.verify-build-environment")
+    id("gradlebuild.install")
 }
 
 dependencies {
-    coreRuntimeOnly(platform(project(":corePlatform")))
+    coreRuntimeOnly(platform(project(":core-platform")))
 
-    pluginsRuntimeOnly(platform(project(":distributionsPublishing")))
-    pluginsRuntimeOnly(platform(project(":distributionsJvm")))
-    pluginsRuntimeOnly(platform(project(":distributionsNative")))
+    pluginsRuntimeOnly(platform(project(":distributions-publishing")))
+    pluginsRuntimeOnly(platform(project(":distributions-jvm")))
+    pluginsRuntimeOnly(platform(project(":distributions-native")))
 
-    pluginsRuntimeOnly(project(":buildInit"))
-    pluginsRuntimeOnly(project(":buildProfile"))
+    pluginsRuntimeOnly(project(":plugin-development"))
+    pluginsRuntimeOnly(project(":build-init"))
+    pluginsRuntimeOnly(project(":build-profile"))
     pluginsRuntimeOnly(project(":antlr"))
     pluginsRuntimeOnly(project(":enterprise"))
 
     // The following are scheduled to be removed from the distribution completely in Gradle 7.0
     pluginsRuntimeOnly(project(":javascript"))
-    pluginsRuntimeOnly(project(":platformPlay"))
-    pluginsRuntimeOnly(project(":idePlay"))
-}
-
-tasks.register<Install>("install") {
-    description = "Installs the minimal distribution"
-    group = "build"
-    with(binDistributionSpec())
-}
-
-tasks.register<Install>("installAll") {
-    description = "Installs the full distribution"
-    group = "build"
-    with(allDistributionSpec())
+    pluginsRuntimeOnly(project(":platform-play"))
+    pluginsRuntimeOnly(project(":ide-play"))
 }
 
 tasks.register<RunEmbeddedGradle>("runDevGradle") {

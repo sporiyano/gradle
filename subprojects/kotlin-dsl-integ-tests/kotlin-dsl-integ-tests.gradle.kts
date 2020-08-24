@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-import plugins.futurePluginVersionsFile
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
+import gradlebuild.cleanup.WhenNotEmpty
 
 plugins {
-    gradlebuild.internal.kotlin
+    id("gradlebuild.internal.kotlin")
 }
 
 description = "Kotlin DSL Integration Tests"
 
 dependencies {
-    testImplementation(project(":kotlinDslTestFixtures"))
+    testImplementation(testFixtures(project(":kotlin-dsl")))
 
-    integTestImplementation(project(":baseServices"))
-    integTestImplementation(project(":coreApi"))
+    integTestImplementation(project(":base-services"))
+    integTestImplementation(project(":core-api"))
     integTestImplementation(project(":core"))
-    integTestImplementation(project(":internalTesting"))
+    integTestImplementation(project(":internal-testing"))
     integTestImplementation("com.squareup.okhttp3:mockwebserver:3.9.1")
 
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
 
-    integTestLocalRepository(project(":kotlinDslPlugins"))
+    integTestLocalRepository(project(":kotlin-dsl-plugins"))
 }
 
 val pluginBundles = listOf(
-    ":kotlinDslPlugins")
+    ":kotlin-dsl-plugins")
 
 pluginBundles.forEach {
     evaluationDependsOn(it)
@@ -57,7 +56,7 @@ tasks {
 
         dependsOn(futurePluginVersionsTasks)
         inputs.files(futurePluginVersionsTasks.map { it.outputFile })
-        outputs.file(processIntegTestResources.get().futurePluginVersionsFile)
+        outputs.file(layout.buildDirectory.file("generated-resources/future-plugin-versions/future-plugin-versions.properties"))
 
         doLast {
             outputs.files.singleFile.bufferedWriter().use { writer ->
@@ -67,10 +66,9 @@ tasks {
             }
         }
     }
-
-    processIntegTestResources {
-        dependsOn(writeFuturePluginVersions)
-    }
+    sourceSets.integTest.get().output.dir(
+        writeFuturePluginVersions.map { it.outputs.files.singleFile.parentFile }
+    )
 }
 
 testFilesCleanup {

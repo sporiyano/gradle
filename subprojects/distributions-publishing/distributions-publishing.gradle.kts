@@ -1,11 +1,11 @@
 plugins {
-    gradlebuild.distribution.packaging
+    id("gradlebuild.distribution.packaging")
 }
 
 dependencies {
-    coreRuntimeOnly(platform(project(":corePlatform")))
+    coreRuntimeOnly(platform(project(":core-platform")))
 
-    pluginsRuntimeOnly(platform(project(":distributionsBasics")))
+    pluginsRuntimeOnly(platform(project(":distributions-basics")))
 
     pluginsRuntimeOnly(project(":signing"))
 }

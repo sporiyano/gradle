@@ -1,62 +1,17 @@
-import build.CheckKotlinCompilerEmbeddableDependencies
-import build.PatchKotlinCompilerEmbeddable
-import build.futureKotlin
-import build.kotlinVersion
-
 plugins {
-    gradlebuild.distribution.`implementation-kotlin`
+    id("gradlebuild.distribution.implementation-kotlin")
+    id("gradlebuild.kotlin-dsl-compiler-embeddable")
 }
 
 description = "Kotlin Compiler Embeddable - patched for Gradle"
 
-base.archivesBaseName = "kotlin-compiler-embeddable-$kotlinVersion-patched-for-gradle"
+moduleIdentity.baseName.set("kotlin-compiler-embeddable-${libs.kotlinVersion}-patched-for-gradle")
 
 dependencies {
-    api(futureKotlin("stdlib"))
-    api(futureKotlin("reflect"))
-    api(futureKotlin("script-runtime"))
-    api(futureKotlin("daemon-embeddable"))
+    api(libs.futureKotlin("stdlib"))
+    api(libs.futureKotlin("reflect"))
+    api(libs.futureKotlin("script-runtime"))
+    api(libs.futureKotlin("daemon-embeddable"))
 
-    runtimeOnly(library("trove4j"))
-}
-
-val kotlinCompilerEmbeddable by configurations.creating
-
-dependencies {
-    kotlinCompilerEmbeddable(project(":distributionsDependencies"))
-    kotlinCompilerEmbeddable(futureKotlin("compiler-embeddable"))
-}
-
-tasks {
-
-    val checkKotlinCompilerEmbeddableDependencies by registering(CheckKotlinCompilerEmbeddableDependencies::class) {
-        current.from(configurations.runtimeClasspath)
-        expected.from(kotlinCompilerEmbeddable)
-    }
-
-    val patchKotlinCompilerEmbeddable by registering(PatchKotlinCompilerEmbeddable::class) {
-        dependsOn(checkKotlinCompilerEmbeddableDependencies)
-        excludes.set(listOf(
-            "META-INF/services/javax.annotation.processing.Processor",
-            "META-INF/native/**/*jansi.*"
-        ))
-        originalFiles.from(kotlinCompilerEmbeddable)
-        dependencies.from(configurations.detachedConfiguration(
-            project.dependencies.project(":distributionsDependencies"),
-            project.dependencies.create(library("jansi"))
-        ))
-        dependenciesIncludes.set(mapOf(
-            "jansi-" to listOf("META-INF/native/**", "org/fusesource/jansi/internal/CLibrary*.class")
-        ))
-        additionalRootFiles.from(classpathManifest)
-
-        outputFile.set(jar.get().archiveFile)
-
-        outputs.doNotCacheIfSlowInternetConnection()
-    }
-
-    jar {
-        dependsOn(patchKotlinCompilerEmbeddable)
-        actions.clear()
-    }
+    runtimeOnly(libs.trove4j)
 }

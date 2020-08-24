@@ -18,23 +18,23 @@
  * Groovy specific adaptations to the model management.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
-    implementation(project(":baseServicesGroovy"))
+    implementation(project(":base-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
+    implementation(project(":base-services-groovy"))
 
-    implementation(library("groovy"))
-    implementation(library("guava"))
+    implementation(libs.groovy)
+    implementation(libs.guava)
 
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":modelCore")))
+    testImplementation(testFixtures(project(":model-core")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("NonTransformedModelDslBackingTest instantiates DefaultClassLoaderRegistry which requires a 'gradle-plugins.properties' through DefaultPluginModuleRegistry")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }

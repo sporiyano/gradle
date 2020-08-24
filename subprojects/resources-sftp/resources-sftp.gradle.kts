@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
+import gradlebuild.cleanup.WhenNotEmpty
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
-    implementation(project(":coreApi"))
+    implementation(project(":base-services"))
+    implementation(project(":core-api"))
     implementation(project(":resources"))
     implementation(project(":core"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("jsch"))
-    implementation(library("commons_io"))
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.jsch)
+    implementation(libs.commonsIo)
 
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":dependencyManagement")))
+    testImplementation(testFixtures(project(":dependency-management")))
     testImplementation(testFixtures(project(":ivy")))
     testImplementation(testFixtures(project(":maven")))
 
     integTestImplementation(project(":logging"))
-    integTestImplementation(testLibrary("jetty"))
-    testLibraries("sshd").forEach { integTestImplementation(it) }
+    integTestImplementation(libs.jetty)
+    integTestImplementation(libs.sshdCore)
+    integTestImplementation(libs.sshdScp)
+    integTestImplementation(libs.sshdSftp)
 
-    integTestDistributionRuntimeOnly(project(":distributionsBasics"))
+    integTestDistributionRuntimeOnly(project(":distributions-basics"))
 }
 
 testFilesCleanup {

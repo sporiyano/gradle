@@ -21,9 +21,9 @@ import org.gradle.initialization.StartParameterBuildOptions.ConfigurationCacheMa
 import org.gradle.initialization.StartParameterBuildOptions.ConfigurationCacheOption
 import org.gradle.initialization.StartParameterBuildOptions.ConfigurationCacheProblemsOption
 import org.gradle.initialization.StartParameterBuildOptions.ConfigurationCacheQuietOption
-import org.gradle.integtests.fixtures.instantexecution.InstantExecutionBuildOperationsFixture
 import org.gradle.integtests.fixtures.BuildOperationTreeFixture
 import org.gradle.integtests.fixtures.RepoScriptBlockUtil
+import org.gradle.integtests.fixtures.configurationcache.ConfigurationCacheBuildOperationsFixture
 import org.gradle.integtests.fixtures.executer.GradleContextualExecuter
 import org.gradle.integtests.fixtures.executer.IntegrationTestBuildContext
 import org.gradle.integtests.fixtures.versions.AndroidGradlePluginVersions
@@ -80,7 +80,7 @@ abstract class AbstractSmokeTest extends Specification {
         static spotbugs = "4.2.0"
 
         // https://plugins.gradle.org/plugin/com.bmuschko.docker-java-application
-        static docker = "6.4.0"
+        static docker = "6.6.0"
 
         // https://plugins.gradle.org/plugin/com.bmuschko.tomcat
         static tomcat = "2.5"
@@ -97,7 +97,7 @@ abstract class AbstractSmokeTest extends Specification {
         static androidGradle = Versions.of(*AGP_VERSIONS.latestsPlusNightly)
 
         // https://search.maven.org/search?q=g:org.jetbrains.kotlin%20AND%20a:kotlin-project&core=gav
-        static kotlin = Versions.of('1.3.21', '1.3.31', '1.3.41', '1.3.50', '1.3.61', '1.3.72')
+        static kotlin = Versions.of('1.3.21', '1.3.31', '1.3.41', '1.3.50', '1.3.61', '1.3.72', '1.4.0')
 
         // https://plugins.gradle.org/plugin/org.gretty
         static gretty = "3.0.3"
@@ -144,6 +144,10 @@ abstract class AbstractSmokeTest extends Specification {
 
         String latest() {
             versions.last()
+        }
+
+        String latestStartsWith(String prefix) {
+            return versions.reverse().find { it.startsWith(prefix) }
         }
 
         private Versions(String... given) {
@@ -199,8 +203,8 @@ abstract class AbstractSmokeTest extends Specification {
 
     private List<String> configurationCacheParameters() {
         List<String> parameters = []
-        if (GradleContextualExecuter.isInstant()) {
-            def maxProblems = maxInstantExecutionProblems()
+        if (GradleContextualExecuter.isConfigCache()) {
+            def maxProblems = maxConfigurationCacheProblems()
             parameters += [
                 "--${ConfigurationCacheOption.LONG_OPTION}".toString(),
                 "-D${ConfigurationCacheMaxProblemsOption.PROPERTY_NAME}=$maxProblems".toString(),
@@ -231,24 +235,28 @@ abstract class AbstractSmokeTest extends Specification {
         ]
     }
 
-    protected int maxInstantExecutionProblems() {
+    protected int maxConfigurationCacheProblems() {
         return 0
     }
 
-    protected void assertInstantExecutionStateStored() {
-        if (GradleContextualExecuter.isInstant()) {
-            newInstantExecutionBuildOperationsFixture().assertStateStored()
+    protected void assertConfigurationCacheStateStored() {
+        if (GradleContextualExecuter.isConfigCache()) {
+            newConfigurationCacheBuildOperationsFixture().assertStateStored()
         }
     }
 
-    protected void assertInstantExecutionStateLoaded() {
-        if (GradleContextualExecuter.isInstant()) {
-            newInstantExecutionBuildOperationsFixture().assertStateLoaded()
+    protected void assertConfigurationCacheStateLoaded() {
+        if (GradleContextualExecuter.isConfigCache()) {
+            newConfigurationCacheBuildOperationsFixture().assertStateLoaded()
         }
     }
 
-    private InstantExecutionBuildOperationsFixture newInstantExecutionBuildOperationsFixture() {
-        return new InstantExecutionBuildOperationsFixture(new BuildOperationTreeFixture(BuildOperationTrace.read(buildOperationTracePath())))
+    private ConfigurationCacheBuildOperationsFixture newConfigurationCacheBuildOperationsFixture() {
+        return new ConfigurationCacheBuildOperationsFixture(
+            new BuildOperationTreeFixture(
+                BuildOperationTrace.read(buildOperationTracePath())
+            )
+        )
     }
 
     private String buildOperationTracePath() {

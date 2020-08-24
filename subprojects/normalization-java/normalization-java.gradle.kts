@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-description = "API extraction for Java"
 
 plugins {
-    gradlebuild.distribution.`api-java`
-    gradlebuild.`publish-public-libraries`
+    id("gradlebuild.distribution.api-java")
+    id("gradlebuild.publish-public-libraries")
 }
 
+description = "API extraction for Java"
+
 dependencies {
-    implementation(project(":baseAnnotations"))
+    implementation(project(":base-annotations"))
     implementation(project(":hashing"))
     implementation(project(":files"))
     implementation(project(":snapshots"))
 
-    implementation(library("asm")) { version { require(libraryVersion("asm")) } }
-    implementation(library("guava")) { version { require(libraryVersion("guava")) } }
-    implementation(library("slf4j_api")) { version { require(libraryVersion("slf4j_api")) } }
-    implementation(library("commons_io")) { version { require(libraryVersion("commons_io")) } }
+    implementation(libs.asm)
+    implementation(libs.guava)
+    implementation(libs.slf4jApi)
+    implementation(libs.commonsIo)
 
-    testImplementation(project(":baseServices"))
-    testImplementation(project(":internalTesting"))
+    testImplementation(project(":base-services"))
+    testImplementation(project(":internal-testing"))
 }

@@ -1,4 +1,3 @@
-import org.gradle.gradlebuild.test.integrationtests.IntegrationTest
 /*
  * Copyright 2014 the original author or authors.
  *
@@ -14,8 +13,10 @@ import org.gradle.gradlebuild.test.integrationtests.IntegrationTest
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import gradlebuild.integrationtests.tasks.IntegrationTest
+
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 val integTestRuntimeResources by configurations.creating {
@@ -35,27 +36,27 @@ val integTestRuntimeResourcesClasspath by configurations.creating {
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":fileCollections"))
+    implementation(project(":file-collections"))
     implementation(project(":ide"))
-    implementation(project(":languageScala"))
-    implementation(project(":platformBase"))
-    implementation(project(":platformJvm"))
-    implementation(project(":platformPlay"))
+    implementation(project(":language-scala"))
+    implementation(project(":platform-base"))
+    implementation(project(":platform-jvm"))
+    implementation(project(":platform-play"))
 
-    implementation(library("groovy"))
-    implementation(library("guava"))
+    implementation(libs.groovy)
+    implementation(libs.guava)
 
-    integTestImplementation(testFixtures(project(":platformPlay")))
+    integTestImplementation(testFixtures(project(":platform-play")))
     integTestImplementation(testFixtures(project(":ide")))
 
-    integTestRuntimeResources(testFixtures(project(":platformPlay")))
+    integTestRuntimeResources(testFixtures(project(":platform-play")))
 
-    integTestDistributionRuntimeOnly(project(":distributionsFull"))
+    integTestDistributionRuntimeOnly(project(":distributions-full"))
 }
 
 strictCompile {
@@ -63,7 +64,7 @@ strictCompile {
 }
 
 tasks.withType<IntegrationTest>().configureEach {
-    dependsOn(":platformPlay:integTestPrepare")
+    dependsOn(":platform-play:integTestPrepare")
     // this is a workaround for which we need a better fix:
     // it sets the platform play test fixtures resources directory in front
     // of the classpath, so that we can find them when executing tests in

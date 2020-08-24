@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-import build.futureKotlin
-
 plugins {
-    gradlebuild.distribution.`implementation-kotlin`
+    id("gradlebuild.distribution.implementation-kotlin")
 }
 
 description = "Kotlin DSL Provider Plugins"
 
 dependencies {
-    implementation(project(":kotlinDsl"))
+    implementation(project(":kotlin-dsl"))
 
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":fileCollections"))
+    implementation(project(":file-collections"))
     implementation(project(":resources"))
     implementation(project(":plugins"))
-    implementation(project(":pluginDevelopment"))
-    implementation(project(":toolingApi"))
+    implementation(project(":plugin-development"))
+    implementation(project(":tooling-api"))
 
-    implementation(futureKotlin("scripting-compiler-impl-embeddable")) {
+    implementation(libs.futureKotlin("scripting-compiler-impl-embeddable")) {
         isTransitive = false
     }
 
-    implementation(library("slf4j_api"))
-    implementation(library("inject"))
+    implementation(libs.slf4jApi)
+    implementation(libs.inject)
 
-    testImplementation(project(":kotlinDslTestFixtures"))
-    testImplementation(testLibrary("mockito_kotlin2"))
+    testImplementation(testFixtures(project(":kotlin-dsl")))
+    testImplementation(libs.mockitoKotlin2)
 }
 
 classycle {

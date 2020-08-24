@@ -13,40 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":processServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":process-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
-    implementation(project(":fileCollections"))
+    implementation(project(":file-collections"))
     implementation(project(":plugins"))
-    implementation(project(":dependencyManagement"))
+    implementation(project(":dependency-management"))
     implementation(project(":publish"))
     implementation(project(":maven"))
     implementation(project(":security"))
 
-    implementation(library("groovy"))
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("inject"))
+    implementation(libs.groovy)
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.inject)
 
     testImplementation(project(":ivy"))
     testImplementation(testFixtures(project(":core")))
 
     testRuntimeOnly(testFixtures(project(":security")))
-    testRuntimeOnly(project(":distributionsPublishing")) {
+    testRuntimeOnly(project(":distributions-publishing")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
 
-    integTestDistributionRuntimeOnly(project(":distributionsPublishing"))
+    integTestDistributionRuntimeOnly(project(":distributions-publishing"))
 }
 
 strictCompile {

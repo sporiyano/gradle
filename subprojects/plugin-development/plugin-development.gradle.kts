@@ -14,60 +14,60 @@
  * limitations under the License.
  */
 
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.cleanup.WhenNotEmpty
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":logging"))
-    implementation(project(":processServices"))
+    implementation(project(":process-services"))
     implementation(project(":files"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":execution"))
     implementation(project(":core"))
-    implementation(project(":dependencyManagement"))
+    implementation(project(":dependency-management"))
     implementation(project(":maven"))
     implementation(project(":ivy"))
-    implementation(project(":platformJvm"))
+    implementation(project(":platform-jvm"))
     implementation(project(":reporting"))
-    implementation(project(":testingBase"))
-    implementation(project(":testingJvm"))
+    implementation(project(":testing-base"))
+    implementation(project(":testing-jvm"))
     implementation(project(":plugins"))
-    implementation(project(":pluginUse"))
+    implementation(project(":plugin-use"))
     implementation(project(":publish"))
     implementation(project(":messaging"))
     implementation(project(":workers"))
-    implementation(project(":modelGroovy"))
+    implementation(project(":model-groovy"))
     implementation(project(":resources"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("groovy"))
-    implementation(library("commons_io"))
-    implementation(library("guava"))
-    implementation(library("inject"))
-    implementation(library("asm"))
+    implementation(libs.slf4jApi)
+    implementation(libs.groovy)
+    implementation(libs.commonsIo)
+    implementation(libs.guava)
+    implementation(libs.inject)
+    implementation(libs.asm)
 
-    testImplementation(project(":fileCollections"))
+    testImplementation(project(":file-collections"))
     testImplementation(testFixtures(project(":core")))
     testImplementation(testFixtures(project(":logging")))
 
-    integTestImplementation(project(":baseServicesGroovy"))
-    integTestImplementation(library("jetbrains_annotations"))
+    integTestImplementation(project(":base-services-groovy"))
+    integTestImplementation(libs.jetbrainsAnnotations)
 
-    integTestLocalRepository(project(":toolingApi")) {
+    integTestLocalRepository(project(":tooling-api")) {
         because("Required by GradleImplDepsCompatibilityIntegrationTest")
     }
 
-    testRuntimeOnly(project(":distributionsBasics")) {
+    testRuntimeOnly(project(":distributions-basics")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsBasics"))
-    crossVersionTestDistributionRuntimeOnly(project(":distributionsBasics"))
+    integTestDistributionRuntimeOnly(project(":distributions-basics"))
+    crossVersionTestDistributionRuntimeOnly(project(":distributions-basics"))
 }
 
 testFilesCleanup {

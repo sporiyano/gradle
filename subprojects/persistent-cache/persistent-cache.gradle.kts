@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":messaging"))
     implementation(project(":native"))
     implementation(project(":files"))
     implementation(project(":resources"))
     implementation(project(":logging"))
 
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_io"))
-    implementation(library("commons_lang"))
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsIo)
+    implementation(libs.commonsLang)
 
-    testImplementation(project(":coreApi"))
+    testImplementation(project(":core-api"))
     testImplementation(testFixtures(project(":core")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("DefaultPersistentDirectoryCacheTest instantiates DefaultClassLoaderRegistry which requires a 'gradle-plugins.properties' through DefaultPluginModuleRegistry")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
 }

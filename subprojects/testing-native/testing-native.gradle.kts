@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":native"))
     implementation(project(":logging"))
-    implementation(project(":processServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":process-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
     implementation(project(":diagnostics"))
     implementation(project(":reporting"))
-    implementation(project(":platformBase"))
-    implementation(project(":platformNative"))
-    implementation(project(":languageNative"))
-    implementation(project(":testingBase"))
+    implementation(project(":platform-base"))
+    implementation(project(":platform-native"))
+    implementation(project(":language-native"))
+    implementation(project(":testing-base"))
 
-    implementation(library("groovy"))
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("commons_io"))
-    implementation(library("inject"))
+    implementation(libs.groovy)
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.commonsIo)
+    implementation(libs.inject)
 
-    testImplementation(project(":fileCollections"))
+    testImplementation(project(":file-collections"))
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":platformNative")))
+    testImplementation(testFixtures(project(":platform-native")))
     testImplementation(testFixtures(project(":diagnostics")))
-    testImplementation(testFixtures(project(":platformBase")))
-    testImplementation(testFixtures(project(":testingBase")))
-    testImplementation(testFixtures(project(":languageNative")))
+    testImplementation(testFixtures(project(":platform-base")))
+    testImplementation(testFixtures(project(":testing-base")))
+    testImplementation(testFixtures(project(":language-native")))
     testImplementation(testFixtures(project(":ide")))
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder tests load services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsNative"))
+    integTestDistributionRuntimeOnly(project(":distributions-native"))
 }

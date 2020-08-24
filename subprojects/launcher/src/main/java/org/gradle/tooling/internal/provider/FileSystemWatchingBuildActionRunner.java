@@ -23,8 +23,10 @@ import org.gradle.internal.deprecation.DeprecationLogger;
 import org.gradle.internal.invocation.BuildAction;
 import org.gradle.internal.invocation.BuildActionRunner;
 import org.gradle.internal.invocation.BuildController;
+import org.gradle.internal.operations.BuildOperationRunner;
 import org.gradle.internal.service.scopes.VirtualFileSystemServices;
-import org.gradle.internal.watch.vfs.WatchingAwareVirtualFileSystem;
+import org.gradle.internal.vfs.VirtualFileSystem;
+import org.gradle.internal.watch.vfs.BuildLifecycleAwareVirtualFileSystem;
 import org.gradle.util.IncubationLogger;
 
 public class FileSystemWatchingBuildActionRunner implements BuildActionRunner {
@@ -38,7 +40,8 @@ public class FileSystemWatchingBuildActionRunner implements BuildActionRunner {
     public Result run(BuildAction action, BuildController buildController) {
         GradleInternal gradle = buildController.getGradle();
         StartParameterInternal startParameter = gradle.getStartParameter();
-        WatchingAwareVirtualFileSystem virtualFileSystem = gradle.getServices().get(WatchingAwareVirtualFileSystem.class);
+        BuildLifecycleAwareVirtualFileSystem virtualFileSystem = gradle.getServices().get(BuildLifecycleAwareVirtualFileSystem.class);
+        BuildOperationRunner buildOperationRunner = gradle.getServices().get(BuildOperationRunner.class);
 
         boolean watchFileSystem = startParameter.isWatchFileSystem();
 
@@ -47,17 +50,18 @@ public class FileSystemWatchingBuildActionRunner implements BuildActionRunner {
             IncubationLogger.incubatingFeatureUsed("Watching the file system");
             dropVirtualFileSystemIfRequested(startParameter, virtualFileSystem);
         }
-        virtualFileSystem.afterBuildStarted(watchFileSystem);
+        virtualFileSystem.afterBuildStarted(watchFileSystem, buildOperationRunner);
         try {
             return delegate.run(action, buildController);
         } finally {
-            virtualFileSystem.beforeBuildFinished(watchFileSystem);
+            int maximumNumberOfWatchedHierarchies = VirtualFileSystemServices.getMaximumNumberOfWatchedHierarchies(startParameter);
+            virtualFileSystem.beforeBuildFinished(watchFileSystem, buildOperationRunner, maximumNumberOfWatchedHierarchies);
         }
     }
 
-    private static void dropVirtualFileSystemIfRequested(StartParameterInternal startParameter, WatchingAwareVirtualFileSystem virtualFileSystem) {
+    private static void dropVirtualFileSystemIfRequested(StartParameterInternal startParameter, BuildLifecycleAwareVirtualFileSystem virtualFileSystem) {
         if (VirtualFileSystemServices.isDropVfs(startParameter)) {
-            virtualFileSystem.invalidateAll();
+            virtualFileSystem.update(VirtualFileSystem.INVALIDATE_ALL);
         }
     }
 

@@ -1,65 +1,71 @@
-import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
-import org.gradle.gradlebuild.test.integrationtests.integrationTestUsesSampleDir
+import gradlebuild.cleanup.WhenNotEmpty
+import gradlebuild.integrationtests.integrationTestUsesSampleDir
 
 plugins {
-    gradlebuild.distribution.`api-java`
+    id("gradlebuild.distribution.api-java")
 }
 
 dependencies {
-    implementation(project(":baseServices"))
+    implementation(project(":base-services"))
     implementation(project(":messaging"))
     implementation(project(":logging"))
-    implementation(project(":processServices"))
-    implementation(project(":workerProcesses"))
+    implementation(project(":process-services"))
+    implementation(project(":worker-processes"))
     implementation(project(":files"))
-    implementation(project(":fileCollections"))
-    implementation(project(":persistentCache"))
-    implementation(project(":jvmServices"))
-    implementation(project(":coreApi"))
-    implementation(project(":modelCore"))
+    implementation(project(":file-collections"))
+    implementation(project(":persistent-cache"))
+    implementation(project(":jvm-services"))
+    implementation(project(":core-api"))
+    implementation(project(":model-core"))
     implementation(project(":core"))
     implementation(project(":workers"))
     implementation(project(":snapshots"))
     implementation(project(":execution"))
-    implementation(project(":dependencyManagement"))
-    implementation(project(":platformBase"))
-    implementation(project(":platformJvm"))
-    implementation(project(":languageJvm"))
-    implementation(project(":buildEvents"))
-    implementation(project(":toolingApi"))
+    implementation(project(":dependency-management"))
+    implementation(project(":platform-base"))
+    implementation(project(":platform-jvm"))
+    implementation(project(":language-jvm"))
+    implementation(project(":build-events"))
+    implementation(project(":tooling-api"))
 
-    implementation(library("groovy"))
-    implementation(library("slf4j_api"))
-    implementation(library("guava"))
-    implementation(library("commons_lang"))
-    implementation(library("fastutil"))
-    implementation(library("ant")) // for 'ZipFile' and 'ZipEntry'
-    implementation(library("asm"))
-    implementation(library("asm_commons"))
-    implementation(library("inject"))
+    implementation(libs.groovy)
+    implementation(libs.slf4jApi)
+    implementation(libs.guava)
+    implementation(libs.commonsLang)
+    implementation(libs.fastutil)
+    implementation(libs.ant) // for 'ZipFile' and 'ZipEntry'
+    implementation(libs.asm)
+    implementation(libs.asmCommons)
+    implementation(libs.inject)
 
-    runtimeOnly(project(":javaCompilerPlugin"))
+    runtimeOnly(project(":java-compiler-plugin"))
 
-    testImplementation(project(":baseServicesGroovy"))
-    testImplementation(library("commons_io"))
+    testImplementation(project(":base-services-groovy"))
+    testImplementation(libs.commonsIo)
     testImplementation(testFixtures(project(":core")))
-    testImplementation(testFixtures(project(":platformBase")))
+    testImplementation(testFixtures(project(":platform-base")))
 
-    testFixturesApi(testFixtures(project(":languageJvm")))
-    testFixturesImplementation(project(":baseServices"))
+    testFixturesApi(testFixtures(project(":language-jvm")))
+    testFixturesImplementation(project(":base-services"))
     testFixturesImplementation(project(":core"))
-    testFixturesImplementation(project(":coreApi"))
-    testFixturesImplementation(project(":modelCore"))
-    testFixturesImplementation(project(":internalIntegTesting"))
-    testFixturesImplementation(project(":platformBase"))
-    testFixturesImplementation(project(":persistentCache"))
-    testFixturesImplementation(library("slf4j_api"))
+    testFixturesImplementation(project(":core-api"))
+    testFixturesImplementation(project(":model-core"))
+    testFixturesImplementation(project(":internal-integ-testing"))
+    testFixturesImplementation(project(":platform-base"))
+    testFixturesImplementation(project(":persistent-cache"))
+    testFixturesImplementation(libs.slf4jApi)
 
-    testRuntimeOnly(project(":distributionsCore")) {
+    testRuntimeOnly(project(":distributions-core")) {
         because("ProjectBuilder test (JavaLanguagePluginTest) loads services from a Gradle distribution.")
     }
-    integTestDistributionRuntimeOnly(project(":distributionsCore"))
-    crossVersionTestDistributionRuntimeOnly(project(":distributionsBasics"))
+
+    integTestDistributionRuntimeOnly(project(":distributions-core"))
+    crossVersionTestDistributionRuntimeOnly(project(":distributions-basics"))
+
+    buildJvms.whenTestingWithEarlierThan(JavaVersion.VERSION_1_9) {
+        val tools = it.jdk.get().toolsClasspath
+        testRuntimeOnly(tools)
+    }
 }
 
 strictCompile {
